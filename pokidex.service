@@ -1,0 +1,15 @@
+[Unit]
+Description=Pokidex Podman Compose Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=exec
+WorkingDirectory=%h/POKIDEX
+ExecStartPre=-/usr/bin/podman-compose -f podman-compose.yml down
+ExecStart=/usr/bin/podman-compose -f podman-compose.yml up
+ExecStop=/usr/bin/podman-compose -f podman-compose.yml down
+Restart=always
+
+[Install]
+WantedBy=default.target
