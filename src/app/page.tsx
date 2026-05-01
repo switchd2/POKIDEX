@@ -1,6 +1,6 @@
 import Link from "next/link";
 import SearchBar from "@/components/SearchBar";
-import { getPokemonList } from "@/lib/pokeapi";
+import { getPokemonList } from "@/lib/api";
 
 export const metadata = {
   title: "PokéWiki - The Complete Pokémon Encyclopedia",
@@ -9,16 +9,16 @@ export const metadata = {
 };
 
 async function getRandomFeatured() {
-  const list = await getPokemonList(10, 0);
-  return list.results.slice(0, 3);
+  const res = await getPokemonList({ limit: 3, sort: 'number' });
+  return res.data;
 }
 
 export default async function Home() {
   const featured = await getRandomFeatured();
 
-  const searchItems = featured.map((p) => ({
+  const searchItems = featured.map((p: any) => ({
     name: p.name,
-    id: parseInt(p.url.split("/").filter(Boolean).pop() || "0"),
+    id: p.nationalDex,
     type: "pokemon" as const,
   }));
 
@@ -99,12 +99,13 @@ export default async function Home() {
             Featured This Week
           </h2>
           <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3">
-            {featured.map((pokemon, index) => {
-              const id = pokemon.url.split("/").filter(Boolean).pop();
+            {featured.map((pokemon: any, index: number) => {
+              const id = pokemon.nationalDex;
+              const sprite = pokemon.sprites?.[0]?.url || `https://raw.githubusercontent.com/PokeAPI/sprites/master/pokemon/other/official-artwork/${id}.png`;
               return (
                 <Link
                   key={pokemon.name}
-                  href={`/pokemon/${pokemon.name}`}
+                  href={`/pokemon/${pokemon.slug}`}
                   className="group border border-black p-4 hover:bg-black hover:text-white transition-colors"
                 >
                   <div className="mb-3 text-xs font-mono font-bold text-gray-400 group-hover:text-gray-200">
@@ -112,7 +113,7 @@ export default async function Home() {
                   </div>
                   <div className="mb-3 h-24 bg-gray-50 group-hover:bg-gray-800 border border-black flex items-center justify-center">
                     <img
-                      src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/pokemon/other/official-artwork/${id}.png`}
+                      src={sprite}
                       alt={pokemon.name}
                       className="h-full w-full object-contain"
                     />
