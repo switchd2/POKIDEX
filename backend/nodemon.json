@@ -2,5 +2,5 @@
   "watch": ["src"],
   "ext": "ts,json",
   "ignore": ["src/**/*.spec.ts"],
-  "exec": "ts-node --compiler-options {\"module\":\"CommonJS\"} src/server.ts"
+  "exec": "ts-node -P tsconfig.json src/server.ts"
 }
