@@ -8,19 +8,17 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "prisma:generate": "prisma generate",
-    "prisma:seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+    "prisma:seed": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+    "seed": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",
-    "@types/express": "^5.0.6",
-    "@types/node": "^25.6.0",
     "bcryptjs": "^3.0.3",
     "bull": "^4.16.5",
     "cheerio": "^1.2.0",
@@ -32,12 +30,9 @@
     "ioredis": "^5.10.1",
     "jsonwebtoken": "^9.0.3",
     "morgan": "^1.10.1",
-    "prisma": "^5.22.0",
     "puppeteer": "^24.42.0",
     "redis": "^5.12.1",
     "swagger-ui-express": "^5.0.1",
-    "ts-node": "^10.9.2",
-    "typescript": "^6.0.3",
     "winston": "^3.19.0",
     "zod": "^4.4.1"
   },
@@ -46,9 +41,14 @@
     "@types/bull": "^3.15.9",
     "@types/cheerio": "^0.22.35",
     "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
+    "@types/node": "^25.6.0",
     "@types/swagger-ui-express": "^4.1.8",
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "prisma": "^5.22.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
   }
 }
