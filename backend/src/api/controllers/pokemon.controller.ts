@@ -63,7 +63,13 @@ export const getAllPokemon = async (req: Request, res: Response) => {
     });
   } catch (error) {
     logger.error('Error fetching pokemon:', error);
-    res.status(500).json({ success: false, error: { message: 'Internal server error' } });
+    res.status(500).json({
+      success: false,
+      error: {
+        code: 'DB_CONNECTION_ERROR',
+        message: 'Could not connect to database. Is postgres running?'
+      }
+    });
   }
 };
 
