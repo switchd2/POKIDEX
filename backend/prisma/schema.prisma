@@ -54,6 +54,7 @@ model Pokemon {
   evolutionChainId  Int?
   competitiveSets   CompetitiveSet[]
   mediaAppearances  MediaAppearance[]
+  searchIndex       SearchIndex?
 }
 
 model Type {
@@ -238,11 +239,12 @@ model MediaAppearance {
 }
 
 model SearchIndex {
-  id          Int     @id @default(autoincrement())
+  id          Int     @id             // Same as Pokemon.id (1:1)
   entityType  String  // "pokemon", "move", "ability", "item"
   entityId    Int
   slug        String
   displayName String
   keywords    String  // space-separated searchable terms
+  pokemon     Pokemon @relation(fields: [id], references: [id])
   @@index([keywords])
 }
