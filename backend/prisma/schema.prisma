@@ -7,74 +7,74 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Pokemon {
-  id                Int               @id
-  nationalDex       Int               @unique
-  slug              String            @unique  // "bulbasaur"
-  name              String
-  nameJapanese      String?
-  genus             String?           // "Seed Pokémon"
-  generationId      Int
-  generation        Generation        @relation(fields: [generationId], references: [id])
-  height            Float             // in meters
-  weight            Float             // in kg
-  catchRate         Int?
-  baseFriendship    Int?
-  baseExp           Int?
-  growthRate        String?
-  genderRatio       String?           // "87.5% M / 12.5% F"
-  eggCycles         Int?
-  hatchTime         Int?
-  isLegendary       Boolean           @default(false)
-  isMythical        Boolean           @default(false)
-  isBaby            Boolean           @default(false)
-  hasGenderDiff     Boolean           @default(false)
-  colorCategory     String?           // official color category
-  shape             String?
-  habitat           String?
-  description       String?           // main description (lore/origin)
-  nameEtymology     String?
-  designOrigin      String?
-  animeAppearances  String?
-  competitiveTier   String?           // OU, UU, NU, etc.
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-
-  // Relations
-  types             PokemonType[]
-  abilities         PokemonAbility[]
-  stats             PokemonStat[]
-  moves             PokemonMove[]
-  sprites           PokemonSprite[]
-  flavorTexts       FlavorText[]
-  locations         PokemonLocation[]
-  forms             PokemonForm[]
-  eggGroups         PokemonEggGroup[]
-  evolutionChain    EvolutionChain?   @relation(fields: [evolutionChainId], references: [id])
-  evolutionChainId  Int?
-  competitiveSets   CompetitiveSet[]
-  mediaAppearances  MediaAppearance[]
-  searchIndex       SearchIndex?
+model Generation {
+  id           Int       @id @default(autoincrement())
+  number       Int       @unique
+  name         String
+  region       String
+  games        String[]
+  releaseYear  Int
+  pokemonCount Int
+  newMechanics String[]
+  description  String?
+  pokemon      Pokemon[]
 }
 
 model Type {
-  id              Int            @id @default(autoincrement())
-  name            String         @unique   // "grass", "fire"
-  nameDisplay     String                   // "GRASS", "FIRE"
-  pokemon         PokemonType[]
-  moves           Move[]
-  // effectiveness stored as JSON for simplicity
-  strongAgainst   String[]                 // type names it's 2x against
-  weakAgainst     String[]                 // type names it's 0.5x against
-  immuneTo        String[]                 // type names it's 0x against
+  id            Int           @id @default(autoincrement())
+  name          String        @unique
+  nameDisplay   String
+  strongAgainst String[]
+  weakAgainst   String[]
+  immuneTo      String[]
+  pokemon       PokemonType[]
+  moves         Move[]
+}
+
+model Pokemon {
+  id              Int               @id
+  nationalDex     Int               @unique
+  slug            String            @unique
+  name            String
+  nameJapanese    String?
+  genus           String?
+  generationId    Int
+  generation      Generation        @relation(fields: [generationId], references: [id])
+  height          Float
+  weight          Float
+  catchRate       Int?
+  baseFriendship  Int?
+  baseExp         Int?
+  growthRate      String?
+  genderRatio     String?
+  isLegendary     Boolean           @default(false)
+  isMythical      Boolean           @default(false)
+  isBaby          Boolean           @default(false)
+  description     String?
+  competitiveTier String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  types           PokemonType[]
+  abilities       PokemonAbility[]
+  stats           PokemonStat[]
+  moves           PokemonMove[]
+  sprites         PokemonSprite[]
+  flavorTexts     FlavorText[]
+  locations       PokemonLocation[]
+  forms           PokemonForm[]
+  competitiveSets CompetitiveSet[]
+  evolutionChainId Int?
+  evolutionChain  EvolutionChain?   @relation(fields: [evolutionChainId], references: [id])
+  eggGroups       PokemonEggGroup[]
+  searchIndex     SearchIndex?
 }
 
 model PokemonType {
-  pokemonId   Int
-  typeId      Int
-  slot        Int       // 1 = primary, 2 = secondary
-  pokemon     Pokemon   @relation(fields: [pokemonId], references: [id])
-  type        Type      @relation(fields: [typeId], references: [id])
+  pokemonId Int
+  typeId    Int
+  slot      Int
+  pokemon   Pokemon @relation(fields: [pokemonId], references: [id])
+  type      Type    @relation(fields: [typeId], references: [id])
   @@id([pokemonId, typeId])
 }
 
@@ -83,74 +83,73 @@ model Ability {
   name        String           @unique
   nameDisplay String
   description String
-  effect      String?          // long effect text
+  effect      String?
   generation  String?
   pokemon     PokemonAbility[]
 }
 
 model PokemonAbility {
-  pokemonId   Int
-  abilityId   Int
-  slot        Int
-  isHidden    Boolean   @default(false)
-  pokemon     Pokemon   @relation(fields: [pokemonId], references: [id])
-  ability     Ability   @relation(fields: [abilityId], references: [id])
+  pokemonId Int
+  abilityId Int
+  slot      Int
+  isHidden  Boolean @default(false)
+  pokemon   Pokemon  @relation(fields: [pokemonId], references: [id])
+  ability   Ability  @relation(fields: [abilityId], references: [id])
   @@id([pokemonId, abilityId])
 }
 
 model PokemonStat {
-  id          Int     @id @default(autoincrement())
-  pokemonId   Int
-  statName    String  // hp, attack, defense, sp_atk, sp_def, speed
-  baseValue   Int
-  effort      Int     // EV yield
-  pokemon     Pokemon @relation(fields: [pokemonId], references: [id])
+  id        Int     @id @default(autoincrement())
+  pokemonId Int
+  statName  String
+  baseValue Int
+  effort    Int
+  pokemon   Pokemon @relation(fields: [pokemonId], references: [id])
 }
 
 model Move {
-  id            Int           @id @default(autoincrement())
-  name          String        @unique
-  nameDisplay   String
-  typeId        Int?
-  type          Type?         @relation(fields: [typeId], references: [id])
-  category      String        // Physical, Special, Status
-  power         Int?
-  accuracy      Int?
-  pp            Int?
-  priority      Int?
-  effect        String?
-  description   String?
-  generation    String?
-  pokemon       PokemonMove[]
+  id          Int           @id @default(autoincrement())
+  name        String        @unique
+  nameDisplay String
+  typeId      Int?
+  type        Type?         @relation(fields: [typeId], references: [id])
+  category    String
+  power       Int?
+  accuracy    Int?
+  pp          Int?
+  priority    Int?
+  effect      String?
+  description String?
+  generation  String?
+  pokemon     PokemonMove[]
 }
 
 model PokemonMove {
-  id            Int     @id @default(autoincrement())
-  pokemonId     Int
-  moveId        Int
-  learnMethod   String  // level-up, tm, egg, tutor
-  level         Int?    // level learned (if level-up)
-  gameVersion   String? // which game version
+  id          Int     @id @default(autoincrement())
+  pokemonId   Int
+  moveId      Int
+  learnMethod String
+  level       Int?
+  gameVersion String?
   pokemon     Pokemon @relation(fields: [pokemonId], references: [id])
-  move          Move    @relation(fields: [moveId], references: [id])
+  move        Move    @relation(fields: [moveId], references: [id])
 }
 
 model PokemonSprite {
-  id          Int     @id @default(autoincrement())
-  pokemonId   Int
-  generation  String? // "gen-1", "gen-2", etc.
-  label       String  // "official-artwork", "front-default",
-                      // "front-shiny", "back-default", etc.
-  url         String  // local path or CDN URL
-  isShiny     Boolean @default(false)
-  isAnimated  Boolean @default(false)
-  pokemon     Pokemon @relation(fields: [pokemonId], references: [id])
+  id         Int     @id @default(autoincrement())
+  pokemonId  Int
+  generation String?
+  label      String
+  url        String
+  isShiny    Boolean @default(false)
+  isAnimated Boolean @default(false)
+  pokemon    Pokemon @relation(fields: [pokemonId], references: [id])
 }
 
 model FlavorText {
   id          Int     @id @default(autoincrement())
   pokemonId   Int
-  gameVersion String  // "Red", "Blue", "Gold", "Scarlet" etc.
+  gameVersion String
   text        String
   language    String  @default("en")
   pokemon     Pokemon @relation(fields: [pokemonId], references: [id])
@@ -161,44 +160,31 @@ model PokemonLocation {
   pokemonId   Int
   gameVersion String
   location    String
-  method      String  // walk, surf, fishing, gift, etc.
+  method      String
   levelMin    Int?
   levelMax    Int?
-  rarity      String? // "Common", "Rare", "5%", etc.
+  rarity      String?
   pokemon     Pokemon @relation(fields: [pokemonId], references: [id])
 }
 
 model EvolutionChain {
   id        Int       @id @default(autoincrement())
-  chainData Json      // store full tree as JSON for flexibility
+  chainData Json
   pokemon   Pokemon[]
 }
 
 model PokemonForm {
   id          Int     @id @default(autoincrement())
   pokemonId   Int
-  formName    String  // "Mega Charizard X", "Alolan Vulpix"
+  formName    String
   formSlug    String
   isRegional  Boolean @default(false)
   isMega      Boolean @default(false)
   isGmax      Boolean @default(false)
   spriteUrl   String?
-  statChanges Json?   // override stats for this form
-  typeChanges Json?   // override types for this form
+  statChanges Json?
+  typeChanges Json?
   pokemon     Pokemon @relation(fields: [pokemonId], references: [id])
-}
-
-model Generation {
-  id            Int       @id @default(autoincrement())
-  number        Int       @unique  // 1-9
-  name          String    // "Generation I"
-  region        String    // "Kanto"
-  games         String[]  // ["Red", "Blue", "Yellow"]
-  releaseYear   Int
-  pokemonCount  Int
-  newMechanics  String[]
-  description   String?
-  pokemon       Pokemon[]
 }
 
 model EggGroup {
@@ -208,43 +194,33 @@ model EggGroup {
 }
 
 model PokemonEggGroup {
-  pokemonId   Int
-  eggGroupId  Int
-  pokemon     Pokemon  @relation(fields: [pokemonId], references: [id])
-  eggGroup    EggGroup @relation(fields: [eggGroupId], references: [id])
+  pokemonId  Int
+  eggGroupId Int
+  pokemon    Pokemon  @relation(fields: [pokemonId], references: [id])
+  eggGroup   EggGroup @relation(fields: [eggGroupId], references: [id])
   @@id([pokemonId, eggGroupId])
 }
 
 model CompetitiveSet {
-  id          Int     @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   pokemonId   Int
-  setName     String  // "Bulky Pivot", "Sweeper"
-  tier        String  // "OU", "UU"
+  setName     String
+  tier        String
   item        String?
   ability     String?
   nature      String?
-  evSpread    String? // "252 HP / 252 Def / 4 SpD"
-  moves       String[] // array of 4 move names
+  evSpread    String?
+  moves       String[]
   description String?
-  pokemon     Pokemon @relation(fields: [pokemonId], references: [id])
-}
-
-model MediaAppearance {
-  id          Int     @id @default(autoincrement())
-  pokemonId   Int
-  mediaType   String  // "anime", "manga", "movie", "game"
-  title       String
-  notes       String?
-  pokemon     Pokemon @relation(fields: [pokemonId], references: [id])
+  pokemon     Pokemon  @relation(fields: [pokemonId], references: [id])
 }
 
 model SearchIndex {
-  id          Int     @id             // Same as Pokemon.id (1:1)
-  entityType  String  // "pokemon", "move", "ability", "item"
+  id          Int     @id
+  entityType  String
   entityId    Int
   slug        String
   displayName String
-  keywords    String  // space-separated searchable terms
+  keywords    String
   pokemon     Pokemon @relation(fields: [id], references: [id])
-  @@index([keywords])
 }
