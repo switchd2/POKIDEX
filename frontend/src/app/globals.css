@@ -3,30 +3,38 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --bg-base: #0a0a0f;
+  --bg-card: #12121a;
+  --bg-elevated: #1a1a2e;
+  --border: #2a2a3e;
+  --text-primary: #f0f0ff;
+  --text-secondary: #8888aa;
+  --text-muted: #444466;
+  --accent-red: #e63946;
+  --accent-gold: #ffd166;
+  --accent-blue: #4cc9f0;
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: white;
-  min-height: 100vh;
-  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-base);
+  color: var(--text-primary);
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
-
-/* Custom styles to match the minimalist/brutalist aesthetic in page.tsx */
-h1, h2, h3 {
-  font-family: 'Bebas Neue', sans-serif;
-  letter-spacing: 0.05em;
-}
-
-.font-mono {
-  font-family: 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', monospace;
-}
+.type-normal { background-color: #9DA3A8; color: #1a1a1a; }
+.type-fire { background-color: #FF6B35; color: #fff; }
+.type-water { background-color: #4FC3F7; color: #1a1a1a; }
+.type-electric { background-color: #FFD60A; color: #1a1a1a; }
+.type-grass { background-color: #4CAF50; color: #fff; }
+.type-ice { background-color: #80DEEA; color: #1a1a1a; }
+.type-fighting { background-color: #C62828; color: #fff; }
+.type-poison { background-color: #8E24AA; color: #fff; }
+.type-ground { background-color: #D4A853; color: #1a1a1a; }
+.type-flying { background-color: #82B1FF; color: #1a1a1a; }
+.type-psychic { background-color: #F06292; color: #fff; }
+.type-bug { background-color: #7CB342; color: #fff; }
+.type-rock { background-color: #8D6E63; color: #fff; }
+.type-ghost { background-color: #5E35B1; color: #fff; }
+.type-dragon { background-color: #1565C0; color: #fff; }
+.type-dark { background-color: #37474F; color: #fff; }
+.type-steel { background-color: #78909C; color: #fff; }
+.type-fairy { background-color: #F48FB1; color: #1a1a1a; }
