@@ -3,9 +3,13 @@ import * as cheerio from 'cheerio';
 import fs from 'fs/promises';
 import path from 'path';
 import logger from '../../utils/logger';
+import { parseInfobox, parseBiology, parseOrigin } from '../parsers/pokemon.parser';
+import { parseBaseStats } from '../parsers/stats.parser';
+import { parseLearnset } from '../parsers/moves.parser';
+import { parseEvolutionChain } from '../parsers/evolutions.parser';
 
 const BASE_URL = "https://bulbapedia.bulbagarden.net/wiki";
-const CACHE_DIR = path.join(__dirname, '../../scraper-cache');
+const CACHE_DIR = path.join(__dirname, '../../../scraper-cache');
 
 export interface RawPokemonData {
   infobox: any;
@@ -40,9 +44,13 @@ export async function scrapePokemon(name: string): Promise<RawPokemonData | null
       const browser = await puppeteer.launch({ headless: true });
       const page = await browser.newPage();
       await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36');
-      await page.goto(url, { waitUntil: 'networkidle2' });
-      html = await page.content();
-      await browser.close();
+      
+      try {
+        await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
+        html = await page.content();
+      } finally {
+        await browser.close();
+      }
 
       // Save to cache
       await fs.writeFile(cachePath, html);
@@ -54,19 +62,19 @@ export async function scrapePokemon(name: string): Promise<RawPokemonData | null
     // 3. Load into Cheerio
     const $ = cheerio.load(html);
 
-    // 4. Parse sections (Placeholders for now)
+    // 4. Parse sections
     return {
-      infobox: {},
-      biology: {},
-      origin: {},
-      stats: {},
-      typeEff: {},
-      evolution: {},
-      learnset: {},
-      locations: {},
-      flavor: {},
-      sprites: {},
-      anime: {}
+      infobox: parseInfobox($),
+      biology: parseBiology($),
+      origin: parseOrigin($),
+      stats: parseBaseStats($),
+      typeEff: {}, // TODO
+      evolution: parseEvolutionChain($),
+      learnset: parseLearnset($),
+      locations: {}, // TODO
+      flavor: {}, // TODO
+      sprites: {}, // TODO
+      anime: {} // TODO
     };
 
   } catch (error) {
