@@ -18,7 +18,7 @@ export const getTypeByName = async (req: Request, res: Response) => {
   try {
     const { name } = req.params;
     const type = await prisma.type.findUnique({
-      where: { name: name.toLowerCase() },
+      where: { name: (name as string).toLowerCase() },
       include: {
         pokemon: {
           include: {
