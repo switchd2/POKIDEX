@@ -1,0 +1,15 @@
+{
+  "name": "pokidex",
+  "version": "1.0.0",
+  "description": "Pokémon Encyclopedia Full Stack Application",
+  "scripts": {
+    "start": "podman-compose up --build",
+    "dev": "node start-local.js",
+    "stop": "podman-compose down",
+    "logs": "podman-compose logs -f",
+    "db:migrate": "podman exec -it pokidex_backend npx prisma migrate deploy",
+    "db:seed": "podman exec -it pokidex_backend npm run prisma:seed",
+    "setup": "podman-compose up -d && echo 'Waiting for DB...' && sleep 10 && npm run db:migrate && npm run db:seed && podman-compose logs -f"
+  },
+  "dependencies": {}
+}
