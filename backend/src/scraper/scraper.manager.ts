@@ -1,9 +1,8 @@
 import Queue from 'bull';
 import { scrapePokemon } from './sources/bulbapedia.scraper';
 import logger from '../utils/logger';
-import { PrismaClient } from '@prisma/client';
+import { upsertPokemon } from '../services/pokemon.service';
 
-const prisma = new PrismaClient();
 const scrapeQueue = new Queue('scrape-pokemon', process.env.REDIS_URL || 'redis://localhost:6379');
 
 export async function addPokemonToQueue(name: string) {
@@ -25,7 +24,7 @@ scrapeQueue.process(process.env.SCRAPE_CONCURRENCY ? parseInt(process.env.SCRAPE
     if (!data) throw new Error(`Failed to scrape ${name}`);
 
     // Transform and Upsert into DB
-    // await prisma.pokemon.upsert({ ... });
+    await upsertPokemon(name, data);
 
     logger.info(`Successfully scraped and saved ${name}`);
   } catch (error) {
