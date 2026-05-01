@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { getPokemonList } from "@/lib/pokeapi";
+import { getPokemonList } from "@/lib/api";
 
 interface Pokemon {
   id: number;
@@ -11,16 +11,16 @@ interface Pokemon {
 }
 
 const GENERATIONS = [
-  { id: "all", name: "ALL", range: [1, 1025] },
-  { id: "1", name: "I", range: [1, 151] },
-  { id: "2", name: "II", range: [152, 251] },
-  { id: "3", name: "III", range: [252, 386] },
-  { id: "4", name: "IV", range: [387, 493] },
-  { id: "5", name: "V", range: [494, 649] },
-  { id: "6", name: "VI", range: [650, 721] },
-  { id: "7", name: "VII", range: [722, 809] },
-  { id: "8", name: "VIII", range: [810, 905] },
-  { id: "9", name: "IX", range: [906, 1025] },
+  { id: "all", name: "ALL", number: undefined },
+  { id: "1", name: "I", number: 1 },
+  { id: "2", name: "II", number: 2 },
+  { id: "3", name: "III", number: 3 },
+  { id: "4", name: "IV", number: 4 },
+  { id: "5", name: "V", number: 5 },
+  { id: "6", name: "VI", number: 6 },
+  { id: "7", name: "VII", number: 7 },
+  { id: "8", name: "VIII", number: 8 },
+  { id: "9", name: "IX", number: 9 },
 ];
 
 const TYPES = [
@@ -55,31 +55,20 @@ export default function Pokedex() {
     const loadPokemon = async () => {
       setLoading(true);
       try {
-        const result = await getPokemonList(1025, 0);
-        const pokemonData: Pokemon[] = result.results
-          .map((p, index) => ({
-            id: index + 1,
-            name: p.name,
-            sprite: `https://raw.githubusercontent.com/PokeAPI/sprites/master/pokemon/other/official-artwork/${index + 1}.png`,
-          }))
-          .sort((a, b) => {
-            if (sort === "name") {
-              return a.name.localeCompare(b.name);
-            }
-            return a.id - b.id;
-          });
+        const genNum = GENERATIONS.find(g => g.id === generation)?.number;
+        const result = await getPokemonList({
+          limit: 1025,
+          generation: genNum,
+          sort: sort
+        });
+        
+        const pokemonData: Pokemon[] = result.data.map((p: any) => ({
+          id: p.nationalDex,
+          name: p.name,
+          sprite: p.sprites?.[0]?.url || `https://raw.githubusercontent.com/PokeAPI/sprites/master/pokemon/other/official-artwork/${p.nationalDex}.png`,
+        }));
 
-        // Filter by generation
-        const gen = GENERATIONS.find((g) => g.id === generation);
-        if (gen && generation !== "all") {
-          const [min, max] = gen.range;
-          const filtered = pokemonData.filter(
-            (p) => p.id >= min && p.id <= max
-          );
-          setPokemon(filtered);
-        } else {
-          setPokemon(pokemonData);
-        }
+        setPokemon(pokemonData);
       } catch (error) {
         console.error("Error loading Pokémon:", error);
       } finally {
