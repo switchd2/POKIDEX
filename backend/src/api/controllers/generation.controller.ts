@@ -18,7 +18,7 @@ export const getAllGenerations = async (req: Request, res: Response) => {
 
 export const getGenerationByNumber = async (req: Request, res: Response) => {
   try {
-    const number = parseInt(req.params.number, 10);
+    const number = parseInt(req.params.number as string, 10);
     const gen = await prisma.generation.findUnique({
       where: { number },
       include: {
