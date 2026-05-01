@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { RawPokemonData } from '../scraper/sources/bulbapedia.scraper';
-import slugify from '../utils/slugify';
+import { slugify } from '../utils/slugify';
 import logger from '../utils/logger';
 
 const prisma = new PrismaClient();
