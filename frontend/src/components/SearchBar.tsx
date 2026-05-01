@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Search, X, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -10,46 +9,9 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-interface SearchItem {
-  name: string;
-  id: number | string;
-  type: 'pokemon' | 'type' | 'generation';
-}
-
-interface SearchBarProps {
-  items?: SearchItem[];
-  autoFocus?: boolean;
-}
-
-export default function SearchBar({ items = [], autoFocus = false }: SearchBarProps) {
+export default function SearchBar() {
   const [query, setQuery] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
-  const [results, setResults] = useState<SearchItem[]>([]);
   const router = useRouter();
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (query.trim()) {
-      const filtered = items.filter(item => 
-        item.name.toLowerCase().includes(query.toLowerCase())
-      ).slice(0, 5);
-      setResults(filtered);
-      setIsOpen(true);
-    } else {
-      setResults([]);
-      setIsOpen(false);
-    }
-  }, [query, items]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,64 +21,31 @@ export default function SearchBar({ items = [], autoFocus = false }: SearchBarPr
   };
 
   return (
-    <div ref={containerRef} className="relative w-full max-w-2xl">
+    <div className="w-full max-w-2xl mx-auto">
       <form onSubmit={handleSearch} className="relative flex items-center">
-        <div className="absolute left-4 text-gray-400">
-          <Search size={20} />
+        <div className="absolute left-5 text-[var(--text-muted)] pointer-events-none">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
         </div>
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          onFocus={() => query.trim() && setIsOpen(true)}
-          autoFocus={autoFocus}
-          placeholder="SEARCH BY NAME, ID, OR TYPE..."
-          className="w-full border border-black py-4 pl-12 pr-4 font-mono text-sm uppercase tracking-wider outline-none focus:bg-gray-50"
+          placeholder="Search by name, ID, or type..."
+          className="w-full bg-[var(--bg-card)] border-2 border-[var(--border)] focus:border-[var(--accent-blue)] rounded-xl py-4 pl-12 pr-16 font-sans text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none transition-colors"
         />
-        {query && (
-          <button
-            type="button"
-            onClick={() => setQuery('')}
-            className="absolute right-16 text-gray-400 hover:text-black"
-          >
-            <X size={20} />
-          </button>
-        )}
         <button
           type="submit"
-          className="absolute right-0 flex h-full items-center border-l border-black bg-black px-4 text-white transition-colors hover:bg-gray-800"
+          className="absolute right-3 flex items-center justify-center bg-[var(--accent-red)] w-10 h-10 rounded-lg text-white hover:opacity-90 transition-opacity"
         >
-          <ArrowRight size={20} />
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
         </button>
       </form>
-
-      {/* Dropdown Results */}
-      {isOpen && results.length > 0 && (
-        <div className="absolute top-full z-50 mt-1 w-full border border-black bg-white shadow-xl">
-          {results.map((item, index) => (
-            <button
-              key={`${item.type}-${item.id}`}
-              onClick={() => {
-                router.push(`/pokemon/${item.name.toLowerCase()}`);
-                setIsOpen(false);
-              }}
-              className={cn(
-                "flex w-full items-center justify-between px-4 py-3 text-left font-mono text-xs uppercase tracking-widest hover:bg-black hover:text-white transition-colors",
-                index !== results.length - 1 && "border-b border-gray-100"
-              )}
-            >
-              <span>{item.name}</span>
-              <span className="text-[10px] opacity-50">#{String(item.id).padStart(4, '0')}</span>
-            </button>
-          ))}
-          <button
-            onClick={handleSearch}
-            className="flex w-full items-center justify-center bg-gray-50 py-2 font-mono text-[10px] uppercase tracking-[0.2em] hover:bg-gray-100"
-          >
-            View all results for "{query}"
-          </button>
-        </div>
-      )}
     </div>
   );
 }
