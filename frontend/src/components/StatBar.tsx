@@ -1,31 +1,31 @@
-import React from "react";
+export default function StatBar({ label, value }: { label: string; value: number }) {
+  const maxValue = 255;
+  const percentage = Math.min((value / maxValue) * 100, 100);
+  
+  // Choose color based on stat type
+  const getStatColor = (l: string) => {
+    const low = l.toLowerCase();
+    if (low.includes('hp')) return 'bg-green-500';
+    if (low.includes('attack')) return 'bg-red-500';
+    if (low.includes('defense')) return 'bg-blue-500';
+    if (low.includes('speed')) return 'bg-yellow-500';
+    return 'bg-purple-500';
+  };
 
-interface StatBarProps {
-  name: string;
-  value: number;
-}
-
-export default function StatBar({ name, value }: StatBarProps) {
-  // Max base stat is usually 255
-  const maxStat = 255;
-  const percentage = Math.min(100, Math.max(0, (value / maxStat) * 100));
+  const barColor = getStatColor(label);
 
   return (
-    <div className="flex items-center justify-between border-b border-black px-4 py-2 last:border-b-0">
-      <div className="w-24 flex-shrink-0 font-mono text-sm font-bold uppercase">
-        {name}
+    <div className="flex items-center gap-6">
+      <span className="mono text-[10px] font-black uppercase text-white/40 w-32 flex-shrink-0 tracking-tighter">
+        {label.replace('-', ' ')}
+      </span>
+      <div className="flex-1 bg-white/5 h-2 rounded-full overflow-hidden">
+        <div 
+          className={`h-full ${barColor} shadow-[0_0_10px_rgba(255,255,255,0.2)] rounded-full transition-all duration-1000`} 
+          style={{ width: `${percentage}%` }} 
+        />
       </div>
-      <div className="w-12 text-right font-mono text-sm font-bold">
-        {value}
-      </div>
-      <div className="ml-4 flex-grow">
-        <div className="h-3 w-full border border-black bg-gray-100">
-          <div
-            className="h-full bg-black transition-all duration-500 ease-out"
-            style={{ width: `${percentage}%` }}
-          />
-        </div>
-      </div>
+      <span className="mono text-xs font-black w-8 text-right">{value}</span>
     </div>
   );
 }
