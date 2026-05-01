@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import Redis from 'ioredis';
-import logger from '../utils/logger';
+import logger from '../../utils/logger';
 
 const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
 
