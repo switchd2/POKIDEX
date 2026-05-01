@@ -113,12 +113,12 @@ export const getNextPrevPokemon = async (req: Request, res: Response) => {
       prisma.pokemon.findFirst({
         where: { id: { lt: id } },
         orderBy: { id: 'desc' },
-        select: { id: true, slug: true, name: true }
+        select: { id: true, nationalDex: true, slug: true, name: true }
       }),
       prisma.pokemon.findFirst({
         where: { id: { gt: id } },
         orderBy: { id: 'asc' },
-        select: { id: true, slug: true, name: true }
+        select: { id: true, nationalDex: true, slug: true, name: true }
       })
     ]);
 
