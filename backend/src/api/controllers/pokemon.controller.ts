@@ -69,7 +69,7 @@ export const getAllPokemon = async (req: Request, res: Response) => {
 
 export const getPokemonBySlug = async (req: Request, res: Response) => {
   try {
-    const { slug } = req.params;
+    const slug = req.params.slug as string;
     const pokemon = await prisma.pokemon.findUnique({
       where: { slug },
       include: {
@@ -95,6 +95,30 @@ export const getPokemonBySlug = async (req: Request, res: Response) => {
     res.json({ success: true, data: pokemon });
   } catch (error) {
     logger.error('Error fetching pokemon by slug:', error);
+    res.status(500).json({ success: false, error: { message: 'Internal server error' } });
+  }
+};
+
+export const getNextPrevPokemon = async (req: Request, res: Response) => {
+  try {
+    const id = parseInt(req.params.id as string, 10);
+    
+    const [prev, next] = await Promise.all([
+      prisma.pokemon.findFirst({
+        where: { id: { lt: id } },
+        orderBy: { id: 'desc' },
+        select: { id: true, slug: true, name: true }
+      }),
+      prisma.pokemon.findFirst({
+        where: { id: { gt: id } },
+        orderBy: { id: 'asc' },
+        select: { id: true, slug: true, name: true }
+      })
+    ]);
+
+    res.json({ success: true, data: { prev, next } });
+  } catch (error) {
+    logger.error('Error fetching next/prev pokemon:', error);
     res.status(500).json({ success: false, error: { message: 'Internal server error' } });
   }
 };
