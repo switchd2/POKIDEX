@@ -1,17 +1,12 @@
 import "./globals.css";
 import { Metadata } from "next";
-import { Bebas_Neue, DM_Sans, JetBrains_Mono } from "next/font/google";
+import { Poppins, JetBrains_Mono } from "next/font/google";
 import Navbar from "@/components/Navbar";
 
-const bebasNeue = Bebas_Neue({ 
-  weight: '400',
+const poppins = Poppins({ 
+  weight: ['400', '600', '700', '800'],
   subsets: ['latin'],
-  variable: '--font-bebas'
-});
-
-const dmSans = DM_Sans({
-  subsets: ['latin'],
-  variable: '--font-dm-sans'
+  variable: '--font-poppins'
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -33,8 +28,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${bebasNeue.variable} ${dmSans.variable} ${jetbrainsMono.variable}`}>
-      <body className="font-sans antialiased">
+    <html lang="en" className={`${poppins.variable} ${jetbrainsMono.variable}`}>
+      <body className="font-sans antialiased text-[var(--text-primary)] bg-[var(--bg-base)]">
         <div className="min-h-screen relative flex flex-col">
           <Navbar />
           <main className="flex-grow pt-[64px]">

@@ -2,54 +2,55 @@ import Link from "next/link";
 
 export default function Navbar() {
   return (
-    <nav className="fixed top-0 w-full z-50 bg-[var(--bg-elevated)] border-b border-[var(--border)] h-[64px] px-6">
+    <nav className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-[var(--border)] h-[72px] px-6">
       <div className="max-w-7xl mx-auto h-full flex items-center justify-between">
         {/* Left side: Logo */}
-        <Link href="/" className="font-bebas text-2xl flex items-center">
-          <span className="text-[var(--accent-red)]">Poké</span>
-          <span className="text-[var(--text-primary)]">Wiki</span>
+        <Link href="/" className="font-extrabold text-2xl flex items-center tracking-tight">
+          <span className="text-[var(--accent-red)]">POKI</span>
+          <span className="text-[var(--text-primary)]">DEX</span>
         </Link>
         
         {/* Center: Nav links */}
-        <nav aria-label="Main navigation" className="flex items-center gap-4 md:gap-8 overflow-x-auto no-scrollbar">
+        <nav aria-label="Main navigation" className="hidden md:flex items-center gap-8">
           <Link 
-            href="/pokedex" 
-            aria-label="Go to Pokédex"
-            className="font-sans text-sm uppercase tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-red)] rounded px-2 py-1 transition-colors"
+            href="/" 
+            className="text-sm font-bold text-[var(--text-secondary)] hover:text-[var(--accent-red)] transition-colors"
           >
-            Pokédex
+            Home
           </Link>
           <Link 
-            href="/types" 
-            aria-label="Go to Types"
-            className="font-sans text-sm uppercase tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-red)] rounded px-2 py-1 transition-colors"
+            href="/pages/pokedex" 
+            className="text-sm font-bold text-[var(--text-secondary)] hover:text-[var(--accent-red)] transition-colors"
+          >
+            Pokémon
+          </Link>
+          <Link 
+            href="/pages/types" 
+            className="text-sm font-bold text-[var(--text-secondary)] hover:text-[var(--accent-red)] transition-colors"
           >
             Types
           </Link>
           <Link 
-            href="/generations" 
-            aria-label="Go to Generations"
-            className="font-sans text-sm uppercase tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-red)] rounded px-2 py-1 transition-colors"
+            href="/pages/generations" 
+            className="text-sm font-bold text-[var(--text-secondary)] hover:text-[var(--accent-red)] transition-colors"
           >
             Generations
           </Link>
         </nav>
         
-        {/* Right side: Search + Badge */}
-        <div className="hidden sm:flex items-center gap-4">
+        {/* Right side: Search + CTA */}
+        <div className="flex items-center gap-4">
+          <div className="hidden sm:block">
+            <span className="bg-slate-100 text-[10px] font-bold text-slate-500 px-3 py-1 rounded-full uppercase tracking-widest">
+              v2.0.0
+            </span>
+          </div>
           <Link 
-            href="/pokedex" 
-            aria-label="Search Pokémon"
-            className="text-[var(--text-muted)] hover:text-[var(--text-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent-red)] rounded p-1 transition-colors"
+            href="/pages/pokedex" 
+            className="bg-[var(--text-primary)] text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:opacity-90 transition-opacity"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
+            Get Started
           </Link>
-          <span className="bg-[var(--bg-card)] border border-[var(--border)] text-xs text-[var(--text-muted)] px-3 py-1 rounded-full font-sans" aria-label="Version 1.0.4">
-            v1.0.4
-          </span>
         </div>
       </div>
     </nav>

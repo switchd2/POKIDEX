@@ -27,46 +27,46 @@ model Type {
   strongAgainst String[]
   weakAgainst   String[]
   immuneTo      String[]
-  pokemon       PokemonType[]
   moves         Move[]
+  pokemon       PokemonType[]
 }
 
 model Pokemon {
-  id              Int               @id
-  nationalDex     Int               @unique
-  slug            String            @unique
-  name            String
-  nameJapanese    String?
-  genus           String?
-  generationId    Int
-  generation      Generation        @relation(fields: [generationId], references: [id])
-  height          Float
-  weight          Float
-  catchRate       Int?
-  baseFriendship  Int?
-  baseExp         Int?
-  growthRate      String?
-  genderRatio     String?
-  isLegendary     Boolean           @default(false)
-  isMythical      Boolean           @default(false)
-  isBaby          Boolean           @default(false)
-  description     String?
-  competitiveTier String?
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  types           PokemonType[]
-  abilities       PokemonAbility[]
-  stats           PokemonStat[]
-  moves           PokemonMove[]
-  sprites         PokemonSprite[]
-  flavorTexts     FlavorText[]
-  locations       PokemonLocation[]
-  forms           PokemonForm[]
-  competitiveSets CompetitiveSet[]
+  id               Int               @id
+  nationalDex      Int               @unique
+  slug             String            @unique
+  name             String
+  nameJapanese     String?
+  genus            String?
+  generationId     Int
+  height           Float
+  weight           Float
+  catchRate        Int?
+  baseFriendship   Int?
+  baseExp          Int?
+  growthRate       String?
+  genderRatio      String?
+  isLegendary      Boolean           @default(false)
+  isMythical       Boolean           @default(false)
+  isBaby           Boolean           @default(false)
+  description      String?
+  competitiveTier  String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
   evolutionChainId Int?
-  evolutionChain  EvolutionChain?   @relation(fields: [evolutionChainId], references: [id])
-  eggGroups       PokemonEggGroup[]
-  searchIndex     SearchIndex?
+  competitiveSets  CompetitiveSet[]
+  flavorTexts      FlavorText[]
+  evolutionChain   EvolutionChain?   @relation(fields: [evolutionChainId], references: [id])
+  generation       Generation        @relation(fields: [generationId], references: [id])
+  abilities        PokemonAbility[]
+  eggGroups        PokemonEggGroup[]
+  forms            PokemonForm[]
+  locations        PokemonLocation[]
+  moves            PokemonMove[]
+  sprites          PokemonSprite[]
+  stats            PokemonStat[]
+  types            PokemonType[]
+  searchIndex      SearchIndex?
 }
 
 model PokemonType {
@@ -75,6 +75,7 @@ model PokemonType {
   slot      Int
   pokemon   Pokemon @relation(fields: [pokemonId], references: [id])
   type      Type    @relation(fields: [typeId], references: [id])
+
   @@id([pokemonId, typeId])
 }
 
@@ -93,8 +94,9 @@ model PokemonAbility {
   abilityId Int
   slot      Int
   isHidden  Boolean @default(false)
-  pokemon   Pokemon  @relation(fields: [pokemonId], references: [id])
-  ability   Ability  @relation(fields: [abilityId], references: [id])
+  ability   Ability @relation(fields: [abilityId], references: [id])
+  pokemon   Pokemon @relation(fields: [pokemonId], references: [id])
+
   @@id([pokemonId, abilityId])
 }
 
@@ -112,7 +114,6 @@ model Move {
   name        String        @unique
   nameDisplay String
   typeId      Int?
-  type        Type?         @relation(fields: [typeId], references: [id])
   category    String
   power       Int?
   accuracy    Int?
@@ -121,6 +122,7 @@ model Move {
   effect      String?
   description String?
   generation  String?
+  type        Type?         @relation(fields: [typeId], references: [id])
   pokemon     PokemonMove[]
 }
 
@@ -131,8 +133,8 @@ model PokemonMove {
   learnMethod String
   level       Int?
   gameVersion String?
-  pokemon     Pokemon @relation(fields: [pokemonId], references: [id])
   move        Move    @relation(fields: [moveId], references: [id])
+  pokemon     Pokemon @relation(fields: [pokemonId], references: [id])
 }
 
 model PokemonSprite {
@@ -196,8 +198,9 @@ model EggGroup {
 model PokemonEggGroup {
   pokemonId  Int
   eggGroupId Int
-  pokemon    Pokemon  @relation(fields: [pokemonId], references: [id])
   eggGroup   EggGroup @relation(fields: [eggGroupId], references: [id])
+  pokemon    Pokemon  @relation(fields: [pokemonId], references: [id])
+
   @@id([pokemonId, eggGroupId])
 }
 

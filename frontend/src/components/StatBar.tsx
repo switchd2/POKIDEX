@@ -16,16 +16,16 @@ export default function StatBar({ label, value }: { label: string; value: number
 
   return (
     <div className="flex items-center gap-6">
-      <span className="mono text-[10px] font-black uppercase text-white/40 w-32 flex-shrink-0 tracking-tighter">
+      <span className="mono text-[10px] font-bold uppercase text-[var(--text-muted)] w-24 flex-shrink-0 tracking-widest">
         {label.replace('-', ' ')}
       </span>
-      <div className="flex-1 bg-white/5 h-2 rounded-full overflow-hidden">
+      <div className="flex-1 bg-slate-100 h-2 rounded-full overflow-hidden">
         <div 
-          className={`h-full ${barColor} shadow-[0_0_10px_rgba(255,255,255,0.2)] rounded-full transition-all duration-1000`} 
+          className={`h-full ${barColor} rounded-full transition-all duration-1000`} 
           style={{ width: `${percentage}%` }} 
         />
       </div>
-      <span className="mono text-xs font-black w-8 text-right">{value}</span>
+      <span className="mono text-xs font-bold w-8 text-right text-[var(--text-primary)]">{value}</span>
     </div>
   );
 }

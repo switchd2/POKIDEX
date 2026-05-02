@@ -75,7 +75,7 @@ export default async function PokedexPage({
       <div className="flex justify-center mt-24 gap-4">
         {page > 1 && (
           <Link 
-            href={`/pokedex?page=${page - 1}${type ? `&type=${type}` : ""}${gen ? `&generation=${gen}` : ""}`}
+            href={`/pages/pokedex?page=${page - 1}${type ? `&type=${type}` : ""}${gen ? `&generation=${gen}` : ""}`}
             className="px-8 py-4 glass rounded-2xl font-premium font-black uppercase tracking-widest text-xs hover:bg-white/10 transition-all"
           >
             Previous
@@ -86,7 +86,7 @@ export default async function PokedexPage({
         </div>
         {page < data.meta.totalPages && (
           <Link 
-            href={`/pokedex?page=${page + 1}${type ? `&type=${type}` : ""}${gen ? `&generation=${gen}` : ""}`}
+            href={`/pages/pokedex?page=${page + 1}${type ? `&type=${type}` : ""}${gen ? `&generation=${gen}` : ""}`}
             className="px-8 py-4 grad-poke rounded-2xl font-premium font-black uppercase tracking-widest text-xs hover:scale-105 transition-all shadow-lg"
           >
             Next

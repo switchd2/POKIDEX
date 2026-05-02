@@ -17,30 +17,30 @@ export default function PokemonCard({ pokemon }: PokemonCardProps) {
   const imgUrl = sprite?.url ?? "/pokeball-placeholder.svg";
 
   return (
-    <Link href={`/pokemon/${pokemon.name.toLowerCase()}`} className="block">
-      <div className="bg-[var(--bg-card)] border border-[var(--border)] rounded-2xl p-4 hover:border-[var(--accent-blue)] hover:-translate-y-1 transition-all duration-200 cursor-pointer h-full flex flex-col relative group">
-        <div className="flex justify-between items-start mb-2">
-          <span className="font-mono text-xs text-[var(--text-muted)]">
+    <Link href={`/pages/pokemon/${pokemon.name.toLowerCase()}`} className="block h-full">
+      <div className="bg-white border border-[var(--border)] rounded-2xl p-6 hover:shadow-[var(--card-shadow)] hover:-translate-y-1 transition-all duration-300 cursor-pointer h-full flex flex-col relative group">
+        <div className="flex justify-between items-center mb-4">
+          <span className="font-mono text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">
             {dexNum}
           </span>
-          <div className="flex flex-col gap-1 items-end max-w-[60%]">
+          <div className="flex gap-1">
             {pokemon.types?.map((t, idx) => (
               <TypeBadge key={idx} type={t.type.name} />
             ))}
           </div>
         </div>
 
-        <div className="flex-grow flex items-center justify-center my-4 relative">
+        <div className="flex-grow flex items-center justify-center my-6">
           <Image
             src={imgUrl}
             alt={pokemon.name}
-            width={96}
-            height={96}
-            className="object-contain drop-shadow-lg group-hover:scale-110 transition-transform duration-300"
+            width={120}
+            height={120}
+            className="object-contain transition-transform duration-500 group-hover:scale-110"
           />
         </div>
 
-        <h3 className="font-sans font-semibold text-sm text-[var(--text-primary)] text-center capitalize mt-auto">
+        <h3 className="font-sans font-bold text-lg text-[var(--text-primary)] text-center capitalize mt-auto">
           {pokemon.name}
         </h3>
       </div>
