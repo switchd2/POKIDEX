@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getSpriteUrl } from "@/lib/api";
 
 interface EvolutionNode {
   species: { name: string; url: string };
@@ -30,12 +31,12 @@ export default function EvolutionChain({ data, currentId }: { data: any, current
       {chain.map((p, i) => (
         <div key={p.name} className="flex items-center gap-8 md:gap-16">
           <Link 
-            href={`/pokemon/${p.name}`}
+            href={`/pages/pokemon/${p.name}`}
             className={`flex flex-col items-center group ${p.id === currentId ? 'opacity-100' : 'opacity-40 hover:opacity-100'} transition-all`}
           >
             <div className={`w-32 h-32 rounded-full glass flex items-center justify-center mb-4 border-2 ${p.id === currentId ? 'border-red-500 shadow-[0_0_20px_rgba(255,62,62,0.3)]' : 'border-transparent'}`}>
               <img 
-                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/pokemon/other/official-artwork/${p.id}.png`} 
+                src={getSpriteUrl(null, p.id)} 
                 alt={p.name}
                 className="w-24 h-24 object-contain group-hover:scale-110 transition-transform"
               />

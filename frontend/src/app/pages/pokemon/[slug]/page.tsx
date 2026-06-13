@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getPokemon } from "@/lib/api";
+import { getPokemon, getSpriteUrl } from "@/lib/api";
 import StatBar from "@/components/StatBar";
 import FlavorTextList from "@/components/FlavorTextList";
 import EvolutionChain from "@/components/EvolutionChain";
@@ -21,8 +21,8 @@ export default async function PokemonDetailPage({
     );
   }
 
-  const artwork = pokemon.sprites.find((s: any) => s.label === "official-artwork")?.url || 
-                  `https://raw.githubusercontent.com/PokeAPI/sprites/master/pokemon/other/official-artwork/${pokemon.nationalDex}.png`;
+  const dbArtwork = pokemon.sprites.find((s: any) => s.label === "official-artwork")?.url;
+  const artwork = getSpriteUrl(dbArtwork, pokemon.nationalDex);
 
   return (
     <div className="animate-fade">

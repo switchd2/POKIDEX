@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { getPokemonList, getPokemon } from "@/lib/api";
+import { getPokemonList, getPokemon, getSpriteUrl } from "@/lib/api";
+import SearchBar from "@/components/SearchBar";
 
 export default async function PokedexLanding() {
   // Fetch Showcase Pokémon (First 8)
@@ -45,16 +46,8 @@ export default async function PokedexLanding() {
             Your Ultimate Pokémon Encyclopedia — Search. Explore. Discover.
           </p>
 
-          <div className="max-w-2xl mx-auto mb-12 relative group">
-             <div className="absolute inset-0 bg-[var(--accent-red)] opacity-5 blur-xl group-focus-within:opacity-10 transition-opacity"></div>
-             <div className="relative flex items-center bg-white border border-[var(--border)] rounded-2xl p-2 shadow-sm transition-all focus-within:shadow-md focus-within:border-[var(--accent-red)]">
-                <svg className="w-6 h-6 text-[var(--text-muted)] ml-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                <input 
-                  type="text" 
-                  placeholder="Search any Pokémon..." 
-                  className="w-full p-4 bg-transparent outline-none text-[var(--text-primary)] font-medium placeholder:text-[var(--text-muted)]"
-                />
-             </div>
+          <div className="mb-12">
+            <SearchBar />
           </div>
 
           <Link href="/pages/pokedex" className="btn-primary inline-flex items-center gap-2 group">
@@ -147,7 +140,7 @@ export default async function PokedexLanding() {
             <div className="bg-white rounded-[2rem] p-8 md:p-16 shadow-[var(--card-shadow)] flex flex-col md:flex-row items-center gap-16">
               <div className="w-full md:w-1/2 flex justify-center">
                 <img 
-                  src={featuredPokemon.sprites.find((s:any) => s.label === 'official-artwork')?.url} 
+                  src={getSpriteUrl(featuredPokemon.sprites.find((s:any) => s.label === 'official-artwork')?.url, featuredPokemon.nationalDex)} 
                   alt={featuredPokemon.name}
                   className="w-full max-w-sm animate-float"
                 />
@@ -237,7 +230,7 @@ function ShowcaseCard({ pokemon }: { pokemon: any }) {
       <div className="relative mb-6">
         <div className="absolute inset-0 bg-slate-100 rounded-full scale-90 group-hover:scale-100 transition-transform opacity-50"></div>
         <img 
-          src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/pokemon/other/official-artwork/${pokemon.nationalDex}.png`} 
+          src={getSpriteUrl(null, pokemon.nationalDex)} 
           alt={pokemon.name}
           className="w-full relative z-10 transition-transform group-hover:scale-110"
         />

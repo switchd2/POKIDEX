@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getPokemonList } from "@/lib/api";
+import { getPokemonList, getSpriteUrl } from "@/lib/api";
 
 export default async function PokedexPage({
   searchParams,
@@ -44,7 +44,7 @@ export default async function PokedexPage({
         {pokemon.map((p: any, i: number) => (
           <Link 
             key={p.slug} 
-            href={`/pokemon/${p.slug}`}
+            href={`/pages/pokemon/${p.slug}`}
             className="poke-card glass glass-hover"
           >
             <div className="flex justify-between items-start mb-6">
@@ -57,7 +57,7 @@ export default async function PokedexPage({
             </div>
             <div className="aspect-square mb-8">
               <img 
-                src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/pokemon/other/official-artwork/${p.nationalDex}.png`} 
+                src={getSpriteUrl(null, p.nationalDex)} 
                 alt={p.name}
                 className="w-full h-full object-contain"
               />
