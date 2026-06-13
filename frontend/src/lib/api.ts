@@ -1,4 +1,8 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000/api";
+export const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000/api";
+export function getSpriteUrl(url: string | null | undefined, nationalDex?: number): string {
+  const defaultUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${nationalDex}.png`;
+  return url || defaultUrl;
+}
 
 export async function getPokemon(slug: string) {
   const res = await fetch(`${API_BASE}/pokemon/${slug}`, {
@@ -33,24 +37,27 @@ export async function searchPokemon(q: string) {
   if (!res.ok) throw new Error("Search failed");
   const json = await res.json();
   
-  // Flatten results into a single array of SearchItem
   const results: any[] = [];
   
-  if (json.data.pokemon) {
-    json.data.pokemon.forEach((p: any) => {
-      results.push({ name: p.name, id: p.nationalDex, type: 'pokemon', slug: p.slug });
-    });
-  }
-  
-  if (json.data.moves) {
-    json.data.moves.forEach((m: any) => {
-      results.push({ name: m.nameDisplay, id: m.id, type: 'move' });
-    });
-  }
-  
-  if (json.data.abilities) {
-    json.data.abilities.forEach((a: any) => {
-      results.push({ name: a.nameDisplay, id: a.id, type: 'ability' });
+  if (json.data && Array.isArray(json.data)) {
+    json.data.forEach((item: any) => {
+      if (item.pokemon) {
+        results.push({
+          id: item.pokemon.id,
+          name: item.pokemon.name,
+          slug: item.pokemon.slug,
+          nationalDex: item.pokemon.nationalDex,
+          types: item.pokemon.types?.map((t: any) => t.type.name) || [],
+          type: 'pokemon'
+        });
+      } else {
+        results.push({
+          id: item.entityId,
+          name: item.displayName,
+          slug: item.slug,
+          type: item.entityType
+        });
+      }
     });
   }
   
