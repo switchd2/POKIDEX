@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from "express"
 import cors from "cors"
 import dotenv from "dotenv"
 import { PrismaClient } from "@prisma/client"
+import { fetchAndSavePokemon, searchPokeAPI, ensurePokemonListCached } from "./services/pokeapi.service"
 
 dotenv.config()
 const app = express()
@@ -78,7 +79,7 @@ app.get("/api/pokemon/:idOrSlug", async (req: Request, res: Response) => {
     const { idOrSlug } = req.params as { idOrSlug: string }
     const isId = /^\d+$/.test(idOrSlug)
 
-    const pokemon = await prisma.pokemon.findFirst({
+    let pokemon = await prisma.pokemon.findFirst({
       where: isId ? { nationalDex: parseInt(idOrSlug) } : { slug: idOrSlug.toLowerCase() },
       include: {
         types:          { include: { type: true } },
@@ -95,6 +96,14 @@ app.get("/api/pokemon/:idOrSlug", async (req: Request, res: Response) => {
         evolutionChain: true,
       },
     })
+
+    if (!pokemon) {
+      try {
+        pokemon = await fetchAndSavePokemon(idOrSlug)
+      } catch (e) {
+        console.error(`Dynamic seeding failed for ${idOrSlug}:`, e)
+      }
+    }
 
     if (!pokemon) return res.status(404).json({ error: "Pokémon not found" })
     res.json({ data: pokemon })
@@ -278,7 +287,8 @@ app.get("/api/search", async (req: Request, res: Response) => {
       return res.json({ data: [], meta: { total: 0 } })
     }
 
-    const results = await prisma.searchIndex.findMany({
+    // 1. Query local database search index first
+    let results = await prisma.searchIndex.findMany({
       where: {
         OR: [
           { keywords:    { contains: q } },
@@ -297,8 +307,46 @@ app.get("/api/search", async (req: Request, res: Response) => {
       },
     })
 
+    // 2. Query PokeAPI names for matches using pokedex-promise-v2
+    const pokeApiMatches = await searchPokeAPI(q);
+    
+    // Filter matches that are NOT already in our database search index
+    const existingIds = new Set(results.map(r => r.id));
+    const missingMatches = pokeApiMatches.filter(m => !existingIds.has(m.id)).slice(0, 5); // limit to top 5 to keep response times fast
+
+    if (missingMatches.length > 0) {
+      console.log(`▸ Dynamically seeding ${missingMatches.length} missing search matches from PokeAPI:`, missingMatches.map(m => m.name));
+      // Fetch and save them in the background / parallel
+      await Promise.all(
+        missingMatches.map(m => fetchAndSavePokemon(m.name).catch(err => {
+          console.error(`Failed to dynamically seed search item ${m.name}:`, err);
+        }))
+      );
+
+      // 3. Re-run local search query to get the newly seeded Pokemon
+      results = await prisma.searchIndex.findMany({
+        where: {
+          OR: [
+            { keywords:    { contains: q } },
+            { displayName: { contains: q, mode: "insensitive" } },
+            { slug:        { contains: q } },
+          ],
+        },
+        take: 20,
+        include: {
+          pokemon: {
+            include: {
+              types:   { include: { type: true } },
+              sprites: { where: { label: "official-artwork" } },
+            },
+          },
+        },
+      });
+    }
+
     res.json({ data: results, meta: { total: results.length, query: q } })
   } catch (err) {
+    console.error("Search failed:", err);
     res.status(500).json({ error: "Search failed" })
   }
 })
@@ -402,6 +450,9 @@ const server = app.listen(PORT, () => {
   console.log("  GET /api/compare               ?ids=1,4,7")
   console.log("  GET /api/legendaries")
   console.log("  GET /api/mythicals\n")
+
+  // Cache Pokémon names in background
+  ensurePokemonListCached().catch(console.error)
 })
 
 server.on('error', (err: any) => {
