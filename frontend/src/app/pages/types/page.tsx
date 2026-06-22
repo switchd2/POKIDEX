@@ -33,7 +33,7 @@ export default function TypesPage() {
         {POKEMON_TYPES.map((type) => (
           <Link 
             key={type.name} 
-            href={`/types/${type.name}`}
+            href={`/pages/types/${type.name}`}
             className="glass p-6 rounded-2xl glass-hover text-center group relative overflow-hidden"
           >
             <div 

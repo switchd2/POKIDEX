@@ -31,7 +31,7 @@ export default async function GenerationsPage() {
         {generations.map((gen) => (
           <Link 
             key={gen.number} 
-            href={`/pokedex?generation=${gen.number}`}
+            href={`/pages/pokedex?generation=${gen.number}`}
             className="glass p-8 rounded-[32px] glass-hover group flex flex-col justify-between h-[300px]"
           >
             <div>

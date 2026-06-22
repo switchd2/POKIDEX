@@ -16,7 +16,7 @@ export default async function PokemonDetailPage({
     return (
       <div className="container-wide py-40 text-center">
         <h1 className="text-4xl font-premium font-black uppercase mb-4">Pokémon Not Found</h1>
-        <Link href="/pokedex" className="text-red-500 underline">Back to Pokedex</Link>
+        <Link href="/pages/pokedex" className="text-red-500 underline">Back to Pokedex</Link>
       </div>
     );
   }

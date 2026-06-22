@@ -41,7 +41,7 @@ export default async function TypePage({
       <div className="flex flex-col md:flex-row justify-between items-end gap-8 mb-16 relative">
         <div className="absolute top-0 right-0 w-64 h-64 blur-[100px] pointer-events-none" style={{ backgroundColor: `${typeColor}30` }}></div>
         <div className="relative z-10">
-          <Link href="/types" className="text-xs uppercase tracking-widest text-[var(--text-muted)] hover:text-white mb-4 block inline-flex items-center gap-2">
+          <Link href="/pages/types" className="text-xs uppercase tracking-widest text-[var(--text-muted)] hover:text-white mb-4 block inline-flex items-center gap-2">
             ← Back to Types
           </Link>
           <div className="flex items-center gap-4 mb-2">
@@ -66,7 +66,7 @@ export default async function TypePage({
         {pokemon.map((p: any) => (
           <Link 
             key={p.slug} 
-            href={`/pokemon/${p.slug}`}
+            href={`/pages/pokemon/${p.slug}`}
             className="poke-card glass glass-hover relative overflow-hidden group"
           >
             <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity" style={{ backgroundColor: typeColor }}></div>
@@ -104,7 +104,7 @@ export default async function TypePage({
         <div className="flex justify-center mt-24 gap-4">
           {page > 1 && (
             <Link 
-              href={`/types/${type}?page=${page - 1}`}
+              href={`/pages/types/${type}?page=${page - 1}`}
               className="px-8 py-4 glass rounded-2xl font-premium font-black uppercase tracking-widest text-xs hover:bg-white/10 transition-all"
             >
               Previous
@@ -115,7 +115,7 @@ export default async function TypePage({
           </div>
           {page < data.meta.totalPages && (
             <Link 
-              href={`/types/${type}?page=${page + 1}`}
+              href={`/pages/types/${type}?page=${page + 1}`}
               className="px-8 py-4 rounded-2xl font-premium font-black uppercase tracking-widest text-xs hover:scale-105 transition-all shadow-lg"
               style={{ backgroundColor: typeColor }}
             >
