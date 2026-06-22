@@ -2,7 +2,7 @@ import express, { Request, Response, NextFunction } from "express"
 import cors from "cors"
 import dotenv from "dotenv"
 import { PrismaClient } from "@prisma/client"
-import { fetchAndSavePokemon, searchPokeAPI, ensurePokemonListCached } from "./services/pokeapi.service"
+import { fetchAndSavePokemon, searchPokeAPI } from "./services/pokeapi.service"
 
 dotenv.config()
 const app = express()
@@ -451,8 +451,7 @@ const server = app.listen(PORT, () => {
   console.log("  GET /api/legendaries")
   console.log("  GET /api/mythicals\n")
 
-  // Cache Pokémon names in background
-  ensurePokemonListCached().catch(console.error)
+
 })
 
 server.on('error', (err: any) => {
