@@ -1,7 +1,8 @@
 export const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:4000/api";
 export function getSpriteUrl(url: string | null | undefined, nationalDex?: number): string {
-  const defaultUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${nationalDex}.png`;
-  return url || defaultUrl;
+  if (url && url.startsWith('http')) return url;
+  const dexId = nationalDex || 0;
+  return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${dexId}.png`;
 }
 
 export async function getPokemon(slug: string) {
