@@ -23,7 +23,13 @@ export async function getPokemonList(params: {
   legendary?: boolean;
   mythical?: boolean;
 }) {
-  const query = new URLSearchParams(params as any).toString();
+  const cleanParams: any = {};
+  for (const [key, val] of Object.entries(params)) {
+    if (val !== undefined && val !== null) {
+      cleanParams[key] = String(val);
+    }
+  }
+  const query = new URLSearchParams(cleanParams).toString();
   const res = await fetch(`${API_BASE}/pokemon?${query}`, {
     next: { revalidate: 0 }
   });

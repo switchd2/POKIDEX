@@ -139,3 +139,62 @@ body {
   border-radius: 4px;
   transition: width 1s ease-out;
 }
+
+/* Pokédex Grid and Card Styling */
+.pokemon-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem 0;
+}
+
+.pokemon-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 1.5rem;
+  padding: 1.25rem;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pokemon-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--card-shadow);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.pokemon-id {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  margin: 0 0 2px 0;
+}
+
+.pokemon-name {
+  font-size: 16px;
+  font-weight: 800;
+  text-transform: capitalize;
+  margin: 4px 0 10px 0;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.type-list {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.type-badge {
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
