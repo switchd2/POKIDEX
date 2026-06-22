@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getPokemonList } from "@/lib/api";
 
 export default async function TypePage({
@@ -78,11 +79,14 @@ export default async function TypePage({
                 ))}
               </div>
             </div>
-            <div className="aspect-square mb-8 relative z-10">
-              <img 
+            <div className="aspect-square mb-8 relative z-10 flex justify-center items-center">
+              <Image 
                 src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${p.nationalDex}.png`} 
                 alt={p.name}
-                className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500 drop-shadow-2xl"
+                width={200}
+                height={200}
+                loading="lazy"
+                className="w-auto h-auto object-contain group-hover:scale-110 transition-transform duration-500 drop-shadow-2xl"
               />
             </div>
             <h4 className="text-2xl font-premium font-black uppercase italic mb-2 relative z-10">{p.name}</h4>

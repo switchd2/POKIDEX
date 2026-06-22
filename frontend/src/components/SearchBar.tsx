@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { searchPokemon } from '@/lib/api';
 
 export default function SearchBar() {
@@ -146,14 +147,13 @@ export default function SearchBar() {
                   <div className="flex items-center gap-4">
                     {isPokemon && imageUrl && (
                       <div className="w-12 h-12 flex-shrink-0 bg-slate-50 rounded-xl flex items-center justify-center overflow-hidden border border-slate-100">
-                        <img
+                        <Image
                           src={imageUrl}
                           alt={poke.name}
+                          width={40}
+                          height={40}
+                          loading="lazy"
                           className="w-10 h-10 object-contain"
-                          onError={(e) => {
-                            // Fallback to github raw if local serving is not built yet
-                            (e.target as HTMLImageElement).src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${poke.nationalDex}.png`;
-                          }}
                         />
                       </div>
                     )}

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getPokemon, getSpriteUrl } from "@/lib/api";
 import StatBar from "@/components/StatBar";
 import FlavorTextList from "@/components/FlavorTextList";
@@ -33,10 +34,13 @@ export default async function PokemonDetailPage({
         <div className="container-wide grid md:grid-cols-2 gap-16 items-center">
           <div className="relative group">
             <div className="absolute -inset-4 bg-white/5 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <img 
+            <Image 
               src={artwork} 
               alt={pokemon.name}
-              className="w-full max-w-[500px] mx-auto filter drop-shadow-[0_30px_60px_rgba(0,0,0,0.5)] transition-transform duration-700 hover:scale-110"
+              width={500}
+              height={500}
+              priority
+              className="w-full max-w-[500px] h-auto mx-auto filter drop-shadow-[0_30px_60px_rgba(0,0,0,0.5)] transition-transform duration-700 hover:scale-110 object-contain"
             />
           </div>
 

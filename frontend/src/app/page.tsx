@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getPokemonList, getPokemon, getSpriteUrl } from "@/lib/api";
 import SearchBar from "@/components/SearchBar";
 
@@ -32,10 +33,10 @@ export default async function PokedexLanding() {
       <section className="relative pt-32 pb-40 px-6 bg-[#F8F9FF] overflow-hidden">
         {/* Floating Sprites (Decorative) */}
         <div className="absolute top-1/4 -left-20 animate-float opacity-20 pointer-events-none hidden lg:block">
-           <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/pokemon/other/official-artwork/25.png" alt="Pikachu" className="w-64" />
+           <Image src="https://raw.githubusercontent.com/PokeAPI/sprites/master/pokemon/other/official-artwork/25.png" alt="Pikachu" width={256} height={256} className="w-64 h-auto" />
         </div>
         <div className="absolute bottom-10 -right-20 animate-float opacity-20 pointer-events-none hidden lg:block" style={{ animationDelay: '1s' }}>
-           <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/pokemon/other/official-artwork/150.png" alt="Mewtwo" className="w-80" />
+           <Image src="https://raw.githubusercontent.com/PokeAPI/sprites/master/pokemon/other/official-artwork/150.png" alt="Mewtwo" width={320} height={320} className="w-80 h-auto" />
         </div>
 
         <div className="max-w-4xl mx-auto text-center relative z-10">
@@ -139,10 +140,13 @@ export default async function PokedexLanding() {
           {featuredPokemon && (
             <div className="bg-white rounded-[2rem] p-8 md:p-16 shadow-[var(--card-shadow)] flex flex-col md:flex-row items-center gap-16">
               <div className="w-full md:w-1/2 flex justify-center">
-                <img 
+                <Image 
                   src={getSpriteUrl(featuredPokemon.sprites.find((s:any) => s.label === 'official-artwork')?.url, featuredPokemon.nationalDex)} 
                   alt={featuredPokemon.name}
-                  className="w-full max-w-sm animate-float"
+                  width={384}
+                  height={384}
+                  priority
+                  className="w-full max-w-sm h-auto animate-float object-contain"
                 />
               </div>
               <div className="w-full md:w-1/2">
@@ -227,12 +231,15 @@ function FeatureCard({ icon, title, desc, accent }: { icon: string; title: strin
 function ShowcaseCard({ pokemon }: { pokemon: any }) {
   return (
     <Link href={`/pages/pokemon/${pokemon.slug}`} className="card-poke p-8 group text-center">
-      <div className="relative mb-6">
+      <div className="relative mb-6 flex justify-center items-center aspect-square">
         <div className="absolute inset-0 bg-slate-100 rounded-full scale-90 group-hover:scale-100 transition-transform opacity-50"></div>
-        <img 
+        <Image 
           src={getSpriteUrl(null, pokemon.nationalDex)} 
           alt={pokemon.name}
-          className="w-full relative z-10 transition-transform group-hover:scale-110"
+          width={150}
+          height={150}
+          loading="lazy"
+          className="w-auto h-auto relative z-10 transition-transform group-hover:scale-110 object-contain"
         />
       </div>
       <span className="block text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1">#{String(pokemon.nationalDex).padStart(4, '0')}</span>

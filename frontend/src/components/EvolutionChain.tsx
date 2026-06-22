@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getSpriteUrl } from "@/lib/api";
 
 interface EvolutionNode {
@@ -35,9 +36,12 @@ export default function EvolutionChain({ data, currentId }: { data: any, current
             className={`flex flex-col items-center group ${p.id === currentId ? 'opacity-100' : 'opacity-40 hover:opacity-100'} transition-all`}
           >
             <div className={`w-32 h-32 rounded-full glass flex items-center justify-center mb-4 border-2 ${p.id === currentId ? 'border-red-500 shadow-[0_0_20px_rgba(255,62,62,0.3)]' : 'border-transparent'}`}>
-              <img 
+              <Image 
                 src={getSpriteUrl(null, p.id)} 
                 alt={p.name}
+                width={96}
+                height={96}
+                loading="lazy"
                 className="w-24 h-24 object-contain group-hover:scale-110 transition-transform"
               />
             </div>

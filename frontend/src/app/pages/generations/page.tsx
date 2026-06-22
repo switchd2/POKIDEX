@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { getGenerations } from "@/lib/api";
 
 export default async function GenerationsPage() {
@@ -51,9 +52,12 @@ export default async function GenerationsPage() {
                <div className="flex -space-x-4">
                   {[1,2,3].map(i => (
                     <div key={i} className="w-10 h-10 rounded-full glass border border-white/10 flex items-center justify-center bg-white/5">
-                        <img 
+                        <Image 
                           src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/pokemon/other/official-artwork/${gen.number * 10 + i}.png`} 
                           alt="starter" 
+                          width={32}
+                          height={32}
+                          loading="lazy"
                           className="w-8 h-8 object-contain"
                         />
                     </div>
