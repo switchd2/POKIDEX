@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getGenerations } from "@/lib/api";
+import { getGenerations } from "@/lib/api.server";
 
 export default async function GenerationsPage() {
   let generations: any[] = [];

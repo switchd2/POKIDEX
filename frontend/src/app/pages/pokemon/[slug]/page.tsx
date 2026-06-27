@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getPokemon, getSpriteUrl } from "@/lib/api";
+import { getPokemon, getSpriteUrl } from "@/lib/api.server";
 import StatBar from "@/components/StatBar";
 import FlavorTextList from "@/components/FlavorTextList";
 import EvolutionChain from "@/components/EvolutionChain";
@@ -8,11 +8,12 @@ import EvolutionChain from "@/components/EvolutionChain";
 export default async function PokemonDetailPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
+  const { slug } = await params;
   let pokemon: any = null;
   try {
-    pokemon = await getPokemon(params.slug);
+    pokemon = await getPokemon(slug);
   } catch (e) {
     return (
       <div className="container-wide py-40 text-center">

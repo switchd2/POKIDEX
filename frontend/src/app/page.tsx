@@ -1,7 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getPokemonList, getPokemon, getSpriteUrl } from "@/lib/api";
+import { getPokemonList, getPokemon, getSpriteUrl } from "@/lib/api.server";
 import SearchBar from "@/components/SearchBar";
+
+export const dynamic = 'force-dynamic';
 
 export default async function PokedexLanding() {
   // Fetch Showcase Pokémon (First 8)

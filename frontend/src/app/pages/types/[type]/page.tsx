@@ -1,16 +1,17 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getPokemonList } from "@/lib/api";
+import { getPokemonList } from "@/lib/api.server";
 
 export default async function TypePage({
   params,
   searchParams,
 }: {
-  params: { type: string };
-  searchParams: { page?: string };
+  params: Promise<{ type: string }>;
+  searchParams: Promise<{ page?: string }>;
 }) {
-  const type = params.type;
-  const page = parseInt(searchParams.page || "1");
+  const { type } = await params;
+  const { page: pageStr } = await searchParams;
+  const page = parseInt(pageStr || "1");
 
   let data: any = { data: [], meta: { total: 0, totalPages: 0 } };
   try {
