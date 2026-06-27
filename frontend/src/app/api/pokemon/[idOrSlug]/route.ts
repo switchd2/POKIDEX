@@ -4,10 +4,10 @@ import { fetchAndSavePokemon } from "@/lib/pokeapi.service";
 
 export async function GET(
   request: Request,
-  { params }: { params: { idOrSlug: string } }
+  { params }: { params: Promise<{ idOrSlug: string }> }
 ) {
   try {
-    const { idOrSlug } = params;
+    const { idOrSlug } = await params;
     const isId = /^\d+$/.test(idOrSlug);
 
     let pokemon = await prisma.pokemon.findFirst({

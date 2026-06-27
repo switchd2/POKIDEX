@@ -3,10 +3,10 @@ import prisma from "@/lib/prisma";
 
 export async function GET(
   request: Request,
-  { params }: { params: { idOrSlug: string } }
+  { params }: { params: Promise<{ idOrSlug: string }> }
 ) {
   try {
-    const { idOrSlug } = params;
+    const { idOrSlug } = await params;
     const { searchParams } = new URL(request.url);
     const method = searchParams.get("method") || undefined;
     const isId = /^\d+$/.test(idOrSlug);

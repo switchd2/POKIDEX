@@ -3,10 +3,11 @@ import prisma from "@/lib/prisma";
 
 export async function GET(
   request: Request,
-  { params }: { params: { name: string } }
+  { params }: { params: Promise<{ name: string }> }
 ) {
   try {
-    const name = params.name.toLowerCase();
+    const { name: rawName } = await params;
+    const name = rawName.toLowerCase();
     const type = await prisma.type.findUnique({
       where: { name },
       include: {

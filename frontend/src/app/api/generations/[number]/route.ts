@@ -3,10 +3,11 @@ import prisma from "@/lib/prisma";
 
 export async function GET(
   request: Request,
-  { params }: { params: { number: string } }
+  { params }: { params: Promise<{ number: string }> }
 ) {
   try {
-    const genNumber = parseInt(params.number);
+    const { number } = await params;
+    const genNumber = parseInt(number);
     const { searchParams } = new URL(request.url);
     const includePokemon = searchParams.get("pokemon") !== "false";
 
