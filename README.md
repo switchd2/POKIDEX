@@ -43,7 +43,7 @@ Key capabilities:
 
 ## Architecture
 
-```
+```text
 ┌──────────────────────────────────────────────────────────┐
 │                     Client (Browser)                     │
 └─────────────────────────┬────────────────────────────────┘
@@ -72,10 +72,10 @@ All services are orchestrated via `podman-compose` in production. Locally, the f
 
 ## Tech Stack
 
-**Frontend**
+### Frontend
 
 | Layer | Technology |
-|---|---|
+| --- | --- |
 | Framework | Next.js 16 (App Router) |
 | Language | TypeScript 5 |
 | UI | React 19 |
@@ -83,10 +83,10 @@ All services are orchestrated via `podman-compose` in production. Locally, the f
 | Icons | Lucide React |
 | ORM (client-side queries) | Prisma Client 5 |
 
-**Backend**
+### Backend
 
 | Layer | Technology |
-|---|---|
+| --- | --- |
 | Runtime | Node.js 20 |
 | Framework | Express 5 |
 | Language | TypeScript 6 |
@@ -96,10 +96,10 @@ All services are orchestrated via `podman-compose` in production. Locally, the f
 | PokéAPI Client | pokedex-promise-v2 |
 | Rate Limiting | express-rate-limit |
 
-**Infrastructure**
+### Infrastructure
 
 | Purpose | Tool |
-|---|---|
+| --- | --- |
 | Containerization | Podman + podman-compose |
 | Deployment | Vercel (frontend + backend via `vercel.json` experimental services) |
 | Process Management | systemd user service (`pokidex.service`) |
@@ -108,7 +108,7 @@ All services are orchestrated via `podman-compose` in production. Locally, the f
 
 ## Project Structure
 
-```
+```text
 POKIDEX/
 ├── backend/
 │   ├── api/
@@ -197,6 +197,7 @@ POKIDEX/
 - `npm` or compatible package manager
 
 For containerized setup:
+
 - [Podman](https://podman.io/getting-started/installation) 4+
 - `podman-compose` (`pip3 install podman-compose`)
 
@@ -204,14 +205,14 @@ For containerized setup:
 
 ### Local Development
 
-**1. Clone the repository**
+#### 1. Clone the repository
 
 ```bash
 git clone https://github.com/<your-username>/<your-repo>.git
 cd POKIDEX
 ```
 
-**2. Install dependencies**
+#### 2. Install dependencies
 
 ```bash
 # Install root dependencies
@@ -224,7 +225,7 @@ cd backend && npm install && cd ..
 cd frontend && npm install && cd ..
 ```
 
-**3. Configure environment variables**
+#### 3. Configure environment variables
 
 ```bash
 cp backend/.env.example backend/.env
@@ -246,7 +247,7 @@ Create `frontend/.env.local`:
 NEXT_PUBLIC_API_URL=http://localhost:4000/api
 ```
 
-**4. Start infrastructure (PostgreSQL + Redis)**
+#### 4. Start infrastructure (PostgreSQL + Redis)
 
 If you have Podman installed, spin up only the database services:
 
@@ -256,7 +257,7 @@ podman-compose up -d postgres redis
 
 Otherwise, ensure a local PostgreSQL and Redis instance are running and match the `DATABASE_URL`/`REDIS_URL` above.
 
-**5. Run database migrations and seed**
+#### 5. Run database migrations and seed
 
 ```bash
 cd backend
@@ -267,7 +268,7 @@ cd ..
 
 The seed script fetches Pokémon data from PokéAPI and populates the database. This takes several minutes on first run due to API rate limiting.
 
-**6. Start development servers**
+#### 6. Start development servers
 
 ```bash
 npm run dev
@@ -276,16 +277,16 @@ npm run dev
 This runs `start-local.js`, which concurrently starts the Express backend on port `4000` and the Next.js frontend on port `3000` with color-coded terminal output.
 
 | Service | URL |
-|---|---|
-| Frontend | http://localhost:3000 |
-| Backend API | http://localhost:4000 |
-| Health Check | http://localhost:4000/health |
+| --- | --- |
+| Frontend | <http://localhost:3000> |
+| Backend API | <http://localhost:4000> |
+| Health Check | <http://localhost:4000/health> |
 
 ---
 
 ### Container Deployment (Podman)
 
-**Automated setup (Ubuntu / Debian / Amazon Linux 2023)**
+#### Automated setup (Ubuntu / Debian / Amazon Linux 2023)
 
 ```bash
 chmod +x setup-podman.sh
@@ -294,7 +295,7 @@ chmod +x setup-podman.sh
 
 This script removes Docker if present, installs Podman and `podman-compose`, enables rootless lingering, installs the systemd user service, and copies the environment template.
 
-**Manual setup**
+#### Manual setup
 
 ```bash
 # Copy and edit environment
@@ -307,14 +308,14 @@ npm start
 podman-compose up --build
 ```
 
-**Run migrations and seed inside the container**
+#### Run migrations and seed inside the container
 
 ```bash
 podman exec -it pokidex_backend npx prisma migrate deploy
 podman exec -it pokidex_backend npm run prisma:seed
 ```
 
-**systemd service (auto-start on reboot)**
+#### systemd service (auto-start on reboot)
 
 ```bash
 systemctl --user enable pokidex
@@ -322,7 +323,7 @@ systemctl --user start pokidex
 systemctl --user status pokidex
 ```
 
-**Useful compose commands**
+#### Useful compose commands
 
 ```bash
 npm run logs      # Tail all container logs
@@ -336,7 +337,7 @@ npm run stop      # Tear down all containers
 ### Backend (`backend/.env`)
 
 | Variable | Description | Default |
-|---|---|---|
+| --- | --- | --- |
 | `DATABASE_URL` | PostgreSQL connection string | — |
 | `REDIS_URL` | Redis connection string | — |
 | `JWT_SECRET` | Secret for token signing | — |
@@ -348,7 +349,7 @@ npm run stop      # Tear down all containers
 ### Frontend (`frontend/.env.local`)
 
 | Variable | Description | Default |
-|---|---|---|
+| --- | --- | --- |
 | `NEXT_PUBLIC_API_URL` | Backend API base URL (client-visible) | `http://127.0.0.1:4000/api` |
 | `BACKEND_URL` | Internal backend URL used by Next.js rewrites (server-side only) | `http://localhost:4000` |
 
@@ -360,7 +361,7 @@ All routes are prefixed with `/api`. The backend runs on port `4000` by default.
 
 ### Health
 
-```
+```http
 GET /health
 ```
 
@@ -370,14 +371,14 @@ Returns `{ "status": "ok", "timestamp": "..." }`.
 
 ### Pokémon
 
-```
+```http
 GET /api/pokemon
 ```
 
 Returns a paginated list of Pokémon.
 
 | Query Parameter | Type | Description |
-|---|---|---|
+| --- | --- | --- |
 | `page` | integer | Page number (default: `1`) |
 | `limit` | integer | Results per page (max: `100`, default: `20`) |
 | `generation` | integer | Filter by generation number |
@@ -385,13 +386,13 @@ Returns a paginated list of Pokémon.
 | `legendary` | boolean | Filter legendaries (`true` / `false`) |
 | `mythical` | boolean | Filter mythicals (`true` / `false`) |
 
-```
+```http
 GET /api/pokemon/:idOrSlug
 ```
 
 Accepts a national dex number or slug. Returns the full Pokémon record with types, stats, sprites, moves, abilities, flavor texts, and evolution chain.
 
-```
+```http
 GET /api/pokemon/:idOrSlug/stats
 GET /api/pokemon/:idOrSlug/moves
 GET /api/pokemon/:idOrSlug/flavor-texts
@@ -403,7 +404,7 @@ Granular sub-resource endpoints for stats, moves, and flavor texts respectively.
 
 ### Search
 
-```
+```http
 GET /api/search?q=<query>
 ```
 
@@ -413,7 +414,7 @@ Full-text search against the `SearchIndex` table. Returns matching Pokémon, typ
 
 ### Types
 
-```
+```http
 GET /api/types
 GET /api/types/:name
 ```
@@ -424,7 +425,7 @@ List all types or fetch a specific type with strength/weakness/immunity data and
 
 ### Generations
 
-```
+```http
 GET /api/generations
 GET /api/generations/:number
 ```
@@ -435,7 +436,7 @@ List all generations or fetch a specific generation by number, including region,
 
 ### Collections
 
-```
+```http
 GET /api/legendaries
 GET /api/mythicals
 ```
@@ -446,7 +447,7 @@ Returns all legendary or mythical Pokémon respectively.
 
 ### Compare
 
-```
+```http
 GET /api/compare?ids=25,6
 ```
 
@@ -459,7 +460,7 @@ Returns a subset of data for the given Pokémon IDs for side-by-side comparison.
 The database is managed by Prisma and backed by PostgreSQL. Core models:
 
 | Model | Description |
-|---|---|
+| --- | --- |
 | `Pokemon` | Primary entity — national dex, slug, name, height, weight, flags, and relations |
 | `Generation` | Generation metadata — region, games, release year, mechanics |
 | `Type` | Type data — name, strong against, weak against, immune to |
@@ -522,4 +523,4 @@ ISC — see [`LICENSE`](LICENSE) for details.
 
 ---
 
-<sub>Data sourced from <a href="https://pokeapi.co">PokéAPI</a>. This project is unofficial and not affiliated with Nintendo, Game Freak, or The Pokémon Company.</sub>
+_Data sourced from [PokéAPI](https://pokeapi.co). This project is unofficial and not affiliated with Nintendo, Game Freak, or The Pokémon Company._
