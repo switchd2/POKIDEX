@@ -207,7 +207,7 @@ For containerized setup:
 **1. Clone the repository**
 
 ```bash
-git clone https://github.com/your-username/POKIDEX.git
+git clone https://github.com/<your-username>/<your-repo>.git
 cd POKIDEX
 ```
 
@@ -233,9 +233,9 @@ cp backend/.env.example backend/.env
 Edit `backend/.env`:
 
 ```env
-DATABASE_URL="postgresql://pokewiki:password@localhost:5432/pokewiki"
+DATABASE_URL="postgresql://<db-user>:<db-password>@localhost:5432/<db-name>"
 REDIS_URL="redis://localhost:6379"
-JWT_SECRET="change-this-in-production"
+JWT_SECRET="<your-strong-random-secret>"
 PORT=4000
 NODE_ENV=development
 ```
