@@ -35,6 +35,9 @@ interface DetailStats {
   types: string[];
   abilities: string[];
   stats: { name: string; value: number }[];
+  flavorText: string;
+  catchRate: number;
+  genderRate: number;
 }
 
 export default function PokedexClient({ initialList }: PokedexClientProps) {
@@ -48,6 +51,7 @@ export default function PokedexClient({ initialList }: PokedexClientProps) {
   const [modalDetails, setModalDetails] = useState<DetailStats | null>(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [errorDetails, setErrorDetails] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'about' | 'stats'>('about');
 
   // Types list for filters
   const typesList = useMemo(() => {
@@ -96,11 +100,20 @@ export default function PokedexClient({ initialList }: PokedexClientProps) {
     const fetchDetails = async () => {
       setLoadingDetails(true);
       setErrorDetails(null);
+      setActiveTab('about'); // Reset tab when opening new modal
       try {
-        const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${activeId}`);
-        if (!res.ok) throw new Error('Failed to fetch Pokémon details');
-        const data = await res.json();
+        const [res, speciesRes] = await Promise.all([
+          fetch(`https://pokeapi.co/api/v2/pokemon/${activeId}`),
+          fetch(`https://pokeapi.co/api/v2/pokemon-species/${activeId}`)
+        ]);
+        if (!res.ok || !speciesRes.ok) throw new Error('Failed to fetch Pokémon details');
         
+        const data = await res.json();
+        const speciesData = await speciesRes.json();
+        
+        const flavorEntry = speciesData.flavor_text_entries.find((f: any) => f.language.name === 'en');
+        const flavorText = flavorEntry ? flavorEntry.flavor_text.replace(/[\n\f]/g, ' ') : 'No description available.';
+
         setModalDetails({
           id: data.id,
           name: data.name,
@@ -112,6 +125,9 @@ export default function PokedexClient({ initialList }: PokedexClientProps) {
             name: s.stat.name,
             value: s.base_stat,
           })),
+          flavorText,
+          catchRate: speciesData.capture_rate,
+          genderRate: speciesData.gender_rate,
         });
       } catch (err: any) {
         setErrorDetails(err.message || 'An error occurred');
@@ -272,13 +288,13 @@ export default function PokedexClient({ initialList }: PokedexClientProps) {
           onClick={() => setActiveId(null)}
         >
           <div 
-            className="relative w-full max-w-2xl bg-white rounded-3xl overflow-hidden shadow-2xl animate-fade-in"
+            className="relative w-full max-w-xl bg-white rounded-3xl overflow-hidden shadow-2xl animate-fade-in flex flex-col max-h-[90vh]"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close Button */}
             <button 
               onClick={() => setActiveId(null)}
-              className="absolute top-4 right-4 z-10 w-10 h-10 flex items-center justify-center bg-slate-100 rounded-full text-slate-600 hover:bg-slate-200 transition-colors"
+              className="absolute top-4 right-4 z-20 w-10 h-10 flex items-center justify-center bg-black/20 hover:bg-black/40 text-white rounded-full transition-colors backdrop-blur-md"
             >
               ✕
             </button>
@@ -304,80 +320,127 @@ export default function PokedexClient({ initialList }: PokedexClientProps) {
             )}
 
             {!loadingDetails && !errorDetails && modalDetails && (
-              <div>
+              <>
                 {/* Modal Top Banner (themed based on primary type) */}
                 <div 
-                  className="relative p-8 text-white flex flex-col md:flex-row items-center gap-6"
+                  className="relative p-8 pb-12 text-white flex flex-col items-center text-center shrink-0"
                   style={{
                     background: `linear-gradient(135deg, ${
                       TYPE_COLORS[modalDetails.types[0]?.toLowerCase()] || '#888'
-                    }dd, ${
+                    }ee, ${
                       TYPE_COLORS[modalDetails.types[1]?.toLowerCase()] || TYPE_COLORS[modalDetails.types[0]?.toLowerCase()] || '#888'
-                    }aa)`,
+                    }dd)`,
                   }}
                 >
-                  <div className="relative w-40 h-40 flex-shrink-0 bg-white/20 rounded-full p-4 flex items-center justify-center">
+                  <div className="relative w-40 h-40 flex-shrink-0 bg-white/20 rounded-full p-4 flex items-center justify-center shadow-inner mb-4">
                     <Image
                       src={getArtworkUrl(modalDetails.id)}
                       alt={modalDetails.name}
                       width={160}
                       height={160}
                       priority
-                      className="object-contain"
+                      className="object-contain drop-shadow-xl z-10 hover:scale-110 transition-transform duration-300"
                     />
                   </div>
                   
-                  <div className="text-center md:text-left">
-                    <span className="font-mono text-white/80 font-bold tracking-widest">
-                      #{String(modalDetails.id).padStart(4, '0')}
-                    </span>
-                    <h2 className="text-4xl font-black uppercase tracking-tight capitalize mt-1">
-                      {modalDetails.name}
-                    </h2>
-                    <div className="flex justify-center md:justify-start gap-2 mt-3">
-                      {modalDetails.types.map(t => (
-                        <span 
-                          key={t}
-                          className="px-4 py-1.5 bg-white/20 rounded-full text-xs font-black uppercase tracking-wider border border-white/20"
-                        >
-                          {t}
-                        </span>
-                      ))}
-                    </div>
+                  <span className="font-mono text-white/80 font-bold tracking-widest text-sm">
+                    #{String(modalDetails.id).padStart(4, '0')}
+                  </span>
+                  <h2 className="text-4xl font-black uppercase tracking-tight capitalize mt-1 drop-shadow-md">
+                    {modalDetails.name}
+                  </h2>
+                  <div className="flex justify-center gap-2 mt-3">
+                    {modalDetails.types.map(t => (
+                      <span 
+                        key={t}
+                        className="px-4 py-1 bg-white/20 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/20 backdrop-blur-sm"
+                      >
+                        {t}
+                      </span>
+                    ))}
                   </div>
                 </div>
 
-                {/* Modal Details Grid */}
-                <div className="p-8 grid grid-cols-1 md:grid-cols-3 gap-8">
-                  {/* Left Specs */}
-                  <div className="space-y-6">
-                    <div className="bg-slate-50 p-4 rounded-2xl">
-                      <span className="block text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1">Height</span>
-                      <span className="text-xl font-bold text-slate-800">{modalDetails.height}m</span>
-                    </div>
-                    <div className="bg-slate-50 p-4 rounded-2xl">
-                      <span className="block text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1">Weight</span>
-                      <span className="text-xl font-bold text-slate-800">{modalDetails.weight}kg</span>
-                    </div>
-                    <div className="bg-slate-50 p-4 rounded-2xl">
-                      <span className="block text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1">Abilities</span>
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {modalDetails.abilities.map(a => (
-                          <span 
-                            key={a}
-                            className="bg-white px-3 py-1 rounded-lg text-xs font-bold text-slate-700 capitalize border border-slate-100"
-                          >
-                            {a.replace('-', ' ')}
-                          </span>
-                        ))}
+                {/* Tabs */}
+                <div className="flex border-b border-slate-100 shrink-0">
+                  <button 
+                    onClick={() => setActiveTab('about')}
+                    className={`flex-1 py-4 text-xs font-black uppercase tracking-widest transition-colors border-b-2 ${
+                      activeTab === 'about' ? 'text-slate-800 border-slate-800' : 'text-slate-400 border-transparent hover:text-slate-600'
+                    }`}
+                  >
+                    About
+                  </button>
+                  <button 
+                    onClick={() => setActiveTab('stats')}
+                    className={`flex-1 py-4 text-xs font-black uppercase tracking-widest transition-colors border-b-2 ${
+                      activeTab === 'stats' ? 'text-slate-800 border-slate-800' : 'text-slate-400 border-transparent hover:text-slate-600'
+                    }`}
+                  >
+                    Stats
+                  </button>
+                </div>
+
+                {/* Modal Body */}
+                <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar flex-1 bg-white">
+                  
+                  {activeTab === 'about' && (
+                    <div className="space-y-6 animate-fade-in">
+                      <p className="text-sm text-slate-600 leading-relaxed text-center italic px-4">
+                        "{modalDetails.flavorText}"
+                      </p>
+                      
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-slate-50 p-4 rounded-2xl flex flex-col items-center justify-center text-center">
+                          <span className="block text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1">Height</span>
+                          <span className="text-lg font-bold text-slate-800">{modalDetails.height}m</span>
+                        </div>
+                        <div className="bg-slate-50 p-4 rounded-2xl flex flex-col items-center justify-center text-center">
+                          <span className="block text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1">Weight</span>
+                          <span className="text-lg font-bold text-slate-800">{modalDetails.weight}kg</span>
+                        </div>
+                      </div>
+
+                      <div>
+                        <h4 className="text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-3 text-center">Abilities</h4>
+                        <div className="flex flex-wrap justify-center gap-2">
+                          {modalDetails.abilities.map(a => (
+                            <span 
+                              key={a}
+                              className="bg-slate-100 px-4 py-2 rounded-xl text-xs font-bold text-slate-700 capitalize"
+                            >
+                              {a.replace('-', ' ')}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="pt-4 border-t border-slate-100">
+                        <div className="grid grid-cols-2 gap-4">
+                           <div>
+                             <span className="block text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1 text-center">Catch Rate</span>
+                             <div className="text-center font-bold text-slate-700">{modalDetails.catchRate}</div>
+                           </div>
+                           <div>
+                             <span className="block text-[10px] uppercase tracking-widest text-slate-400 font-bold mb-1 text-center">Gender</span>
+                             <div className="text-center font-bold text-slate-700 text-sm flex justify-center gap-2">
+                               {modalDetails.genderRate === -1 ? (
+                                 <span className="text-slate-500">Genderless</span>
+                               ) : (
+                                 <>
+                                   <span className="text-blue-500">♂ {((8 - modalDetails.genderRate) / 8 * 100).toFixed(1)}%</span>
+                                   <span className="text-pink-500">♀ {(modalDetails.genderRate / 8 * 100).toFixed(1)}%</span>
+                                 </>
+                               )}
+                             </div>
+                           </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
 
-                  {/* Right Stats */}
-                  <div className="md:col-span-2 space-y-4">
-                    <h3 className="text-xs uppercase tracking-widest text-slate-400 font-bold mb-2">Base Stats</h3>
-                    <div className="space-y-3">
+                  {activeTab === 'stats' && (
+                    <div className="space-y-4 animate-fade-in">
                       {modalDetails.stats.map((s) => {
                         const maxVal = 255;
                         const percentage = (s.value / maxVal) * 100;
@@ -404,10 +467,18 @@ export default function PokedexClient({ initialList }: PokedexClientProps) {
                           </div>
                         );
                       })}
+                      <div className="pt-4 border-t border-slate-100 flex items-center">
+                         <span className="w-20 text-xs font-black text-slate-700 uppercase tracking-wider">Total</span>
+                         <span className="w-10 text-xs font-black text-slate-800 text-right pr-3">
+                           {modalDetails.stats.reduce((acc, s) => acc + s.value, 0)}
+                         </span>
+                         <div className="flex-1"></div>
+                      </div>
                     </div>
-                  </div>
+                  )}
+
                 </div>
-              </div>
+              </>
             )}
           </div>
         </div>

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import TypeDistributionWheel from "@/components/TypeDistributionWheel";
+import TypeMatchupMatrix from "@/components/TypeMatchupMatrix";
 
 const POKEMON_TYPES = [
   { name: "normal", color: "#A8A77A" },
@@ -21,7 +23,42 @@ const POKEMON_TYPES = [
   { name: "fairy", color: "#D685AD" },
 ];
 
-export default function TypesPage() {
+async function getTypesData() {
+  const typeData = await Promise.all(
+    POKEMON_TYPES.map(async (type) => {
+      try {
+        const res = await fetch(`https://pokeapi.co/api/v2/type/${type.name}`, {
+          next: { revalidate: 86400 }
+        });
+        if (!res.ok) return null;
+        const data = await res.json();
+        
+        const pokemon = data.pokemon.map((p: any) => {
+          const id = parseInt(p.pokemon.url.split('/').filter(Boolean).pop() || '0');
+          return {
+            id,
+            name: p.pokemon.name,
+            url: p.pokemon.url
+          };
+        }).filter((p: any) => p.id > 0 && p.id <= 1025);
+
+        return {
+          name: type.name,
+          count: pokemon.length,
+          pokemon
+        };
+      } catch (e) {
+        return null;
+      }
+    })
+  );
+  
+  return typeData.filter(Boolean) as any[];
+}
+
+export default async function TypesPage() {
+  const typeData = await getTypesData();
+
   return (
     <div className="container-wide py-24 animate-fade">
       <div className="mb-16">
@@ -51,28 +88,32 @@ export default function TypesPage() {
         ))}
       </div>
 
+      {/* Type Matchup Matrix */}
       <section className="mt-32">
-        <div className="glass p-12 rounded-[48px] relative overflow-hidden">
+        <div className="glass p-8 md:p-12 rounded-[48px] relative overflow-hidden">
            <div className="absolute top-0 right-0 w-64 h-64 bg-red-600/10 blur-[100px]"></div>
-           <h3 className="text-3xl font-premium font-black uppercase italic mb-8">Type Matchup Guide</h3>
-           <div className="grid md:grid-cols-2 gap-12">
-              <div className="space-y-6">
-                <p className="text-white/50 text-sm leading-relaxed">
-                  Understanding type effectiveness is the key to Pokémon mastery. 
-                  Each type has distinct strengths and weaknesses against others. 
-                  For example, <span className="text-red-500 font-bold uppercase">Fire</span> is super effective against <span className="text-green-500 font-bold uppercase">Grass</span>, 
-                  but weak against <span className="text-blue-500 font-bold uppercase">Water</span>.
-                </p>
-                <div className="flex gap-4">
-                   <div className="px-6 py-3 glass rounded-xl text-[10px] uppercase tracking-widest font-black">2.0x Damage</div>
-                   <div className="px-6 py-3 glass rounded-xl text-[10px] uppercase tracking-widest font-black text-white/30">0.5x Damage</div>
-                </div>
-              </div>
-              <div className="flex items-center justify-center">
-                 <div className="w-full h-48 glass rounded-2xl flex items-center justify-center text-white/10 uppercase tracking-[0.5em] font-black italic">
-                    Matchup Table Pro
-                 </div>
-              </div>
+           <div className="relative z-10">
+             <h3 className="text-3xl font-premium font-black uppercase italic mb-6">Type Matchup Guide</h3>
+             <p className="text-slate-500 text-sm leading-relaxed max-w-3xl mb-10">
+               Understanding type effectiveness is the key to Pokémon mastery. 
+               Each type has distinct strengths and weaknesses against others. 
+               Select attacking and defending types to see multipliers.
+             </p>
+             <TypeMatchupMatrix />
+           </div>
+        </div>
+      </section>
+
+      {/* Type Distribution Wheel */}
+      <section className="mt-32">
+        <div className="glass p-8 md:p-12 rounded-[48px] relative overflow-hidden">
+           <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-600/10 blur-[100px]"></div>
+           <div className="relative z-10">
+             <h3 className="text-3xl font-premium font-black uppercase italic mb-6">Type Distribution</h3>
+             <p className="text-slate-500 text-sm leading-relaxed max-w-3xl mb-10">
+               Explore how many Pokémon exist for each elemental type across Generations 1-9.
+             </p>
+             <TypeDistributionWheel typeData={typeData} />
            </div>
         </div>
       </section>
